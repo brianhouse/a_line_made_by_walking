@@ -1,0 +1,11 @@
+syntax: glob
+
+*.pyc
+*.svn
+.DS_Store
+dev
+dist
+build
+housepy
+related_papers
+*.CSV
