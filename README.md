@@ -1,4 +1,24 @@
+data collection shield -- assembly. compatible with my arduino?
 
+so the accelerometers can wire directly into the arduino. need some code for the data collection.
+
+constraining to a route is one thing. could even play back a day's worth.
+
+this is not a minor project.
+
+
+have to somehow log the precise start time of starting walking, and somehow that maps to the start time of the audio playback.
+
+in theory you could do this with one accelerometer.
+
+in theory you could do this, including playback, with iOS.
+
+
+what would be more useful to me? getting hip to iOS? or arduino? arduino seems more fun.
+
+does arduino even have a realtime clock? doesnt matter. just need relative time since the first footfall.
+
+//
 
 http://www.ladyada.net/make/logshield/rtc.html
 http://www.ladyada.net/make/logshield/sd.html
@@ -37,3 +57,40 @@ http://arduino.cc/forum/index.php?topic=98898.0
 
 
 25hz. is ok. enough to proceed.
+
+//
+
+ok, so this is kind of working.
+
+- second accelerometer
+- map to music
+- countdown / sync
+
+then I can actually try it. 
+
+materials needed:
+- 9v.
+- headers? just solder direct on this accel.
+
+need better soldering iron.
+
+
+this isnt going to acheive a realized project status. what did I accomplish in 5 hours?
+- getting back up to speed with the code
+- testing the RTC (to no avail)
+- getting headers mounted and assembling everything
+- getting a candidate signal processing sequence
+
+
+it's going to be another session to get another accelerometer together, make an actual mounting, make the sound, etc.
+
+dont have another session.
+
+and then of course, having that data, and graphing it, and making sound, etc, is a lot more.
+
+
+
+
+
+
+
