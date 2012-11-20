@@ -9,3 +9,6 @@ build
 housepy
 related_papers
 *.CSV
+logs
+config.yaml
+docs

@@ -1,0 +1,66 @@
+{% extends 'page.html' %}
+
+{% block head %}
+    <script type="text/javascript">
+
+        var walk_data = [];
+
+        function timestamp () {
+            return new Date().getTime()
+        }
+
+        function startLog () {
+            $('#start_btn').hide();
+            $('#stop_btn').show();
+            $('#readings').show();
+            window.ondevicemotion = function(event) {
+                // var d = [timestamp(), event.acceleration.x, event.acceleration.y, event.acceleration.z];
+                var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
+                $('#display_x').html(d[1]);
+                $('#display_y').html(d[2]);
+                $('#display_z').html(d[3]);
+                walk_data.push(d);
+            }
+        }
+
+        function stopLog () {
+            $('#stop_btn').hide();
+            $('#readings').hide();
+            window.ondevicemotion = function(event) { };
+            $.ajax({
+                type: 'POST',
+                url: 'index.py', 
+                data: {'walk_data': JSON.stringify(walk_data)}, 
+                success: function () {
+                    alert("Success!");
+                    walk_data = [];
+                    $('#start_btn').show();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Failed: " + textStatus);
+                    walk_data = [];
+                    $('#start_btn').show();                    
+                }
+            });
+        }
+
+        $(document).ready(function() {                   
+
+            $('#stop_btn').hide();
+            $('#readings').hide();            
+
+        });  
+
+    </script>
+{% endblock head %}
+
+{% block body %}
+    <input id="start_btn" type="button" onClick="startLog()" value="START" />
+    <input id="stop_btn" type="button" onClick="stopLog()" value="STOP" />
+
+    <div id="readings">
+        X: <span id="display_x"></span><br />
+        Y: <span id="display_y"></span><br />
+        Z: <span id="display_z"></span><br />
+    </div>
+{% endblock body %}

@@ -4,72 +4,63 @@ import sys, json
 import numpy as np
 from housepy import log, config, drawing, science
 from housepy import signal_processing as sp
+from housepy.crashdb import CrashDB
 
-# load data
-filename = sys.argv[1]
-log.info("Reading %s" % filename)
-with open(filename) as f:
-    content = f.readlines()
-data = []
-for line in content:
-    parts = line.strip().split(',')
-    d = int(parts[0]), int(parts[1]), int(parts[2]), int(parts[3])
-    data.append(d)
+# get data
+db = CrashDB("walk_data_2.json")
+data = db[db.keys()[0]]
+db.close()
 data = np.array(data)
-
-data = data[:-5]
-
-# the sampling between each analog pin is delayed ~= 11 ms, so this approximately corrects for it
-# not as good as xbee sampling
-t0s = data[:,0] - np.min(data[:,0])
-t1s = t0s + 11
-t2s = t1s + 11
+ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
 
 # let's sample every millisecond, so the time of the last reading is how many samples we need
-total_samples = t2s[-1]
-log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 60.0)))
+total_samples = ts[-1]
+log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
 
 # resample the values
-xs = sp.resample(t0s, data[:,1], total_samples)
-ys = sp.resample(t1s, data[:,2], total_samples)
-zs = sp.resample(t2s, data[:,3], total_samples)
-
-MIN = 100.0
-MAX = 400.0
-
-# normalize the values to a given range
-xs = (xs - MIN) / MAX
-ys = (ys - MIN) / MAX
-zs = (zs - MIN) / MAX
+xs = sp.resample(ts, data[:,1], total_samples)
+ys = sp.resample(ts, data[:,2], total_samples)
+zs = sp.resample(ts, data[:,3], total_samples)
 
 # get 3d vector
 ds = np.sqrt(np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2))
 
-# low-pass filter, invert, cut off everything above average
-ds = sp.smooth(ds, 600)
+# normalize the values to a given range (this is gs, I believe)
+MIN = -20.0
+MAX = 20.0
+xs = (xs - MIN) / (MAX - MIN)
+ys = (ys - MIN) / (MAX - MIN)
+zs = (zs - MIN) / (MAX - MIN)
+ds = (ds - MIN) / (MAX - MIN)
+
+
+# # low-pass filter, invert, cut off everything above average
+ds = sp.smooth(ds, 300)
 ds = sp.normalize(ds)
-ds = 1.0 - ds
 av = np.average(ds)
-ds -= av
-ds *= ds >= 0
-ds = sp.normalize(ds)
 
 # detect peaks
-peaks, valleys = sp.detect_peaks(ds, lookahead=50, delta=0.5)
-
-print peaks
+# lookahead should be the minimum time of a step, maybe .3s, 300ms
+peaks, valleys = sp.detect_peaks(ds, lookahead=300, delta=.1)
+peaks = [peak for peak in peaks if peak[1] > av * 1.2]
+valley = [valley for valley in valleys if valley[1] < av * 0.8]
 
 
 # plot
 ctx = drawing.Context(5000, 600, relative=True, flip=True)
-ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.3))
-ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.3))
-ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.3))
+ctx.line(200.0 / total_samples, 0.5, 400.0 / total_samples, 0.5, thickness=10.0)
+ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.5))
+ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
+ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.5))
 ctx.line([(float(i) / total_samples, d) for (i, d) in enumerate(ds)], stroke=(0., 0., 0.), thickness=2.0)
 for peak in peaks:
     x, y = peak
     x = float(x) / total_samples
-    ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(1., 0., 0.))
+    ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(1., 0., 0.), thickness=0.0)
+for valley in valleys:
+    x, y = valley
+    x = float(x) / total_samples
+    ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
 ctx.show()
 
 
@@ -81,6 +72,26 @@ ctx.show()
 # dr = sp.normalize(dr)
 
 
+"""
 
+ok. so that kind of seems to work.
+
+to get the exact footstep part, halfway between a peak and a valley, though it doesnt so much matter...
+
+filling in footsteps based on a harmonic oscillator or something would really be great
+
+the length of the connection lines could almost allow us to infer whether it is a right or left
+
+if it's long, it's right; short, left. 
+
+but they have to alternate. so some kind of windowed average. this should happen after filling the missing teeth.
+
+long pause can reset.
+
+do people always start walking with the same foot?
+
+can we recognize and throw out the phone scrambling at the beginning and end?
+
+"""
 
 
