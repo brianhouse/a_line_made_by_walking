@@ -2,21 +2,13 @@
 
 import sys, json
 import numpy as np
-from housepy import log, config, drawing, science
+from housepy import log, config, science
 from housepy import signal_processing as sp
 from housepy.crashdb import CrashDB, CrashDBError
 
-def process_walk(index):
+def process_walk(data):
 
     # get data    
-    db = CrashDB("walk_data.json")
-    try:
-        data = db[index]
-    except CrashDBError as e:
-        log.error(e)        
-        db.close()
-        return
-    db.close()
     data = np.array(data)
     ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
 
@@ -69,6 +61,12 @@ def process_walk(index):
 
 def plot(xs, ys, zs, ds, peaks, valleys, total_samples):
 
+    try:
+        from housepy import drawing
+    except:
+        log.error("Can't draw")
+        return
+
     # plot
     ctx = drawing.Context(5000, 600, relative=True, flip=True)
     ctx.line(200.0 / total_samples, 0.5, 400.0 / total_samples, 0.5, thickness=10.0)
@@ -90,7 +88,15 @@ def plot(xs, ys, zs, ds, peaks, valleys, total_samples):
 if __name__ == "__main__":
     index = sys.argv[1]
     log.info(index)
-    process_walk(index)
+    db = CrashDB("walk_data.json")
+    try:
+        data = db[index]
+    except CrashDBError as e:
+        log.error(e)        
+        db.close()
+    else:
+        db.close()    
+        process_walk(data)
 
 
 # ## other ideas

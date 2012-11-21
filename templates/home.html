@@ -46,8 +46,7 @@
                 data: {'walk_data': JSON.stringify(walk_data)}, 
                 success: function () {
                     alert("Success!");
-                    walk_data = [];
-                    $('#start_btn').show();
+                    window.location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Failed: " + textStatus);
