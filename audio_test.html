@@ -7,6 +7,13 @@
         var context = null;
         var buffers = {};
 
+        // generated server side
+        var sequence = [    [0, 'left'],
+                            [1, 'right'],
+                            [2, 'left'],
+                            [3, 'right']
+                            ]
+
         function loadSound (name, url) {
             var request = new XMLHttpRequest();
             request.open('GET', url, true);
@@ -21,12 +28,17 @@
         }
 
         function playSound (name, time) {
-            console.log("Playing " + name);            
             buffer = buffers[name];
             var source = context.createBufferSource(); // creates a sound source
             source.buffer = buffer;                    // tell the source which sound to play
             source.connect(context.destination);       // connect the source to the context's destination (the speakers)
-            source.noteOn(time);                          // play the source now
+            source.noteOn(time);                       // play the source now
+        }
+
+        function startAudio () {
+            for (var i=0; i<sequence.length; i++) {
+                playSound(sequence[i][1], sequence[i][0]);
+            }
         }
 
         $(document).ready(function() {        
@@ -39,21 +51,15 @@
                 alert("Web Audio API is not supported in this browser");
             }            
 
-            loadSound('left_sound', "left.wav");
-            loadSound('right_sound', "right.wav");
-
-            setTimeout(function () {
-                playSound('left_sound', 0.1);
-                playSound('right_sound', 0.2);
-            }, 1000);
-
+            loadSound('left', "left.wav");
+            loadSound('right', "right.wav");
 
         });  
     </script>
 </head>
 <body>
 
-    Hello world.
+    <input id="start_btn" type="button" value="START AUDIO" onClick="startAudio()" />
 
 </body>
 </html>
