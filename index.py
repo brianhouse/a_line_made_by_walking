@@ -17,6 +17,7 @@ if page.method == 'POST':
         exit()
     log.info("data: %s" % data)
     index = int(time.time())
+    log.info("Saving data...")
     db = CrashDB("walk_data.json")
     db[index] = data
     db.close()

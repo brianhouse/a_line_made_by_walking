@@ -8,6 +8,8 @@ from housepy.crashdb import CrashDB, CrashDBError
 
 def process_walk(data):
 
+    log.info("Processing...")
+
     # get data    
     data = np.array(data)
     ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
@@ -58,6 +60,7 @@ def process_walk(data):
     if __name__ == "__main__":
         plot(xs, ys, zs, ds, peaks, valleys, total_samples)
 
+    log.info("--> done")
 
 def plot(xs, ys, zs, ds, peaks, valleys, total_samples):
 
