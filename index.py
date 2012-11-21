@@ -1,23 +1,21 @@
 #!/usr/bin/env python
 
-import os, time, json
+import os, time, json, datetime
 from housepy import page, log
 from housepy.crashdb import CrashDB
 
+
+db = CrashDB("walk_data.json")
+
 if page.method == 'POST':
     log.info("Received walk data...")
-    try:
-        db = CrashDB("walk_data.json")
-        data = json.loads(page.form['walk_data'])
-        db[int(time.time())] = data
-        db.close()
-    except Exception as e:
-        try:
-            db.close()
-        except:
-            pass
-        page.error(e)
-        exit()    
+    data = json.loads(page.form['walk_data'])    
+    db[int(time.time())] = data
     page.text("OK")
 else:
-    page.render("home.html", {})
+    options = {}
+    for timestamp in db:
+        options[timestamp] = datetime.datetime.fromtimestamp(float(timestamp))
+    page.render("home.html", {'options': options})
+
+db.close()

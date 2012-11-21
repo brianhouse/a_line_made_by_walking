@@ -4,17 +4,27 @@
     <script type="text/javascript">
 
         var walk_data = [];
+        var walk_index = null;
 
         function timestamp () {
             return new Date().getTime()
+        }
+
+        function checkSelection () {
+            walk_index = $('#walk_select option:selected').val();
+            if (walk_index.length) {
+                $('#start_btn').show();
+            } else {
+                $('#start_btn').hide();
+            }
         }
 
         function startLog () {
             $('#start_btn').hide();
             $('#stop_btn').show();
             $('#readings').show();
+            alert(walk_index);
             window.ondevicemotion = function(event) {
-                // var d = [timestamp(), event.acceleration.x, event.acceleration.y, event.acceleration.z];
                 var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
                 $('#display_x').html(d[1]);
                 $('#display_y').html(d[2]);
@@ -45,16 +55,23 @@
         }
 
         $(document).ready(function() {                   
-
+            $('#start_btn').hide();
             $('#stop_btn').hide();
             $('#readings').hide();            
-
         });  
 
     </script>
 {% endblock head %}
 
 {% block body %}
+
+    <select id="walk_select" onChange="checkSelection()">
+        <option value=""></option>
+    {% for timestamp, date in options.items() %}
+        <option value="{{ timestamp}}">{{ date }}</a>
+    {% endfor %}
+    </select>
+
     <input id="start_btn" type="button" onClick="startLog()" value="START" />
     <input id="stop_btn" type="button" onClick="stopLog()" value="STOP" />
 
@@ -64,3 +81,4 @@
         Z: <span id="display_z"></span><br />
     </div>
 {% endblock body %}
+
