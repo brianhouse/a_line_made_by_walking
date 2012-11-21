@@ -21,8 +21,12 @@ if page.method == 'POST':
     db = CrashDB("walk_data.json")
     db[index] = data
     db.close()
-    log.info("Processing data...")    
-    process_walk(index)
+    log.info("Processing data...")
+    try:    
+        process_walk(index, data)
+    except Exception as e:
+        page.error(e)
+        exit()
     log.info("--> done")
     page.text("OK")
 else:

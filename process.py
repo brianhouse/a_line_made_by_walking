@@ -6,7 +6,7 @@ from housepy import log, config, science
 from housepy import signal_processing as sp
 from housepy.crashdb import CrashDB, CrashDBError
 
-def process_walk(data):
+def process_walk(index, data):
 
     # get data    
     data = np.array(data)
