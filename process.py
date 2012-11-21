@@ -4,65 +4,93 @@ import sys, json
 import numpy as np
 from housepy import log, config, drawing, science
 from housepy import signal_processing as sp
-from housepy.crashdb import CrashDB
+from housepy.crashdb import CrashDB, CrashDBError
 
-# get data
-db = CrashDB("walk_data_2.json")
-data = db[db.keys()[0]]
-db.close()
-data = np.array(data)
-ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
+def process_walk(index):
 
-# let's sample every millisecond, so the time of the last reading is how many samples we need
-total_samples = ts[-1]
-log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
+    # get data    
+    db = CrashDB("walk_data.json")
+    try:
+        data = db[index]
+    except CrashDBError as e:
+        log.error(e)        
+        db.close()
+        return
+    db.close()
+    data = np.array(data)
+    ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
 
-# resample the values
-xs = sp.resample(ts, data[:,1], total_samples)
-ys = sp.resample(ts, data[:,2], total_samples)
-zs = sp.resample(ts, data[:,3], total_samples)
+    # let's sample every millisecond, so the time of the last reading is how many samples we need
+    total_samples = ts[-1]
+    log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
 
-# get 3d vector
-ds = np.sqrt(np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2))
+    # resample the values
+    xs = sp.resample(ts, data[:,1], total_samples)
+    ys = sp.resample(ts, data[:,2], total_samples)
+    zs = sp.resample(ts, data[:,3], total_samples)
 
-# normalize the values to a given range (this is gs, I believe)
-MIN = -20.0
-MAX = 20.0
-xs = (xs - MIN) / (MAX - MIN)
-ys = (ys - MIN) / (MAX - MIN)
-zs = (zs - MIN) / (MAX - MIN)
-ds = (ds - MIN) / (MAX - MIN)
+    # get 3d vector
+    ds = np.sqrt(np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2))
+
+    # normalize the values to a given range (this is gs, I believe)
+    MIN = -20.0
+    MAX = 20.0
+    xs = (xs - MIN) / (MAX - MIN)
+    ys = (ys - MIN) / (MAX - MIN)
+    zs = (zs - MIN) / (MAX - MIN)
+    ds = (ds - MIN) / (MAX - MIN)
+
+    # low-pass filter
+    ds = sp.smooth(ds, 300)
+    ds = sp.normalize(ds)
+    av = np.average(ds)
+
+    # detect peaks
+    # lookahead should be the minimum time of a step, maybe .3s, 300ms
+    peaks, valleys = sp.detect_peaks(ds, lookahead=300, delta=.1)
+    peaks = [peak for peak in peaks if peak[1] > av * 1.2]
+    valley = [valley for valley in valleys if valley[1] < av * 0.8]
+    log.info("PEAKS %s" % peaks)
+    log.info("VALLEYS %s" % valleys)
+
+    db = CrashDB("sequence_data.json")
+    ## will have to change this
+    sequence = []
+    for p, peak in enumerate(peaks):
+        foot = 'left' if p % 2 == 0 else 'right'
+        sequence.append((peak[0], foot))
+    db[index] = sequence
+    db.close()
+    log.info("--> WROTE SEQUENCE %s" % index)
+
+    if __name__ == "__main__":
+        plot(xs, ys, zs, ds, peaks, valleys, total_samples)
 
 
-# # low-pass filter, invert, cut off everything above average
-ds = sp.smooth(ds, 300)
-ds = sp.normalize(ds)
-av = np.average(ds)
+def plot(xs, ys, zs, ds, peaks, valleys, total_samples):
 
-# detect peaks
-# lookahead should be the minimum time of a step, maybe .3s, 300ms
-peaks, valleys = sp.detect_peaks(ds, lookahead=300, delta=.1)
-peaks = [peak for peak in peaks if peak[1] > av * 1.2]
-valley = [valley for valley in valleys if valley[1] < av * 0.8]
+    # plot
+    ctx = drawing.Context(5000, 600, relative=True, flip=True)
+    ctx.line(200.0 / total_samples, 0.5, 400.0 / total_samples, 0.5, thickness=10.0)
+    ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.5))
+    ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
+    ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.5))
+    ctx.line([(float(i) / total_samples, d) for (i, d) in enumerate(ds)], stroke=(0., 0., 0.), thickness=2.0)
+    for peak in peaks:
+        x, y = peak
+        x = float(x) / total_samples
+        ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(1., 0., 0.), thickness=0.0)
+    for valley in valleys:
+        x, y = valley
+        x = float(x) / total_samples
+        ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
+    ctx.image.save("charts/%s.png" % index, "PNG")
 
 
-# plot
-ctx = drawing.Context(5000, 600, relative=True, flip=True)
-ctx.line(200.0 / total_samples, 0.5, 400.0 / total_samples, 0.5, thickness=10.0)
-ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.5))
-ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
-ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.5))
-ctx.line([(float(i) / total_samples, d) for (i, d) in enumerate(ds)], stroke=(0., 0., 0.), thickness=2.0)
-for peak in peaks:
-    x, y = peak
-    x = float(x) / total_samples
-    ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(1., 0., 0.), thickness=0.0)
-for valley in valleys:
-    x, y = valley
-    x = float(x) / total_samples
-    ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
-ctx.show()
-
+if __name__ == "__main__":
+    index = sys.argv[1]
+    log.info(index)
+    process_walk(index)
 
 
 # ## other ideas

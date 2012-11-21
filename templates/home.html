@@ -24,6 +24,9 @@
             $('#stop_btn').show();
             $('#readings').show();
             alert(walk_index);
+            // load sequence
+            // count down
+            // start playing
             window.ondevicemotion = function(event) {
                 var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
                 $('#display_x').html(d[1]);

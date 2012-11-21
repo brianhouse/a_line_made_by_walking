@@ -12,3 +12,6 @@ related_papers
 logs
 config.yaml
 docs
+charts/*.png
+walk_data.json
+sequence_data.json
