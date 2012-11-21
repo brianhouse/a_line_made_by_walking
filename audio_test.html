@@ -1,0 +1,52 @@
+<html>
+<head>
+    <title>Audio Test</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>    
+    <script type="text/javascript">
+
+        var context = null;
+        var buffers = {};
+
+        function loadSound (name, url) {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.responseType = 'arraybuffer';
+            request.onload = function() {
+                context.decodeAudioData(request.response, function(buffer) {
+                    buffers[name] = buffer;
+                    console.log("Loaded " + name + " (" + url +")");                    
+                }, null);
+            }
+            request.send();
+        }
+
+        function playSound (buffer) {
+            var source = context.createBufferSource(); // creates a sound source
+            source.buffer = buffer;                    // tell the source which sound to play
+            source.connect(context.destination);       // connect the source to the context's destination (the speakers)
+            source.noteOn(0);                          // play the source now
+        }
+
+        $(document).ready(function() {        
+
+            console.log("Ready.");          
+
+            try {
+                context = new webkitAudioContext();
+            } catch(e) {
+                alert("Web Audio API is not supported in this browser");
+            }            
+
+            loadSound('left_sound', "left.wav");
+            loadSound('right_sound', "right.wav");
+
+
+        });  
+    </script>
+</head>
+<body>
+
+    Hello world.
+
+</body>
+</html>
