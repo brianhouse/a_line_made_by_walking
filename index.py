@@ -21,7 +21,9 @@ if page.method == 'POST':
     db = CrashDB("walk_data.json")
     db[index] = data
     db.close()
+    log.info("Processing data...")    
     process_walk(index)
+    log.info("--> done")
     page.text("OK")
 else:
     db = CrashDB("sequence_data.json")    
