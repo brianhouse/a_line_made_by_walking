@@ -20,20 +20,35 @@
         }
 
         function startLog () {
+            $('#walk_select').hide();
             $('#start_btn').hide();
             $('#stop_btn').show();
             $('#readings').show();
-            // alert(walk_index);
-            // load sequence
-            // count down
-            // start playing
-            window.ondevicemotion = function(event) {
-                var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
-                $('#display_x').html(d[1]);
-                $('#display_y').html(d[2]);
-                $('#display_z').html(d[3]);
-                walk_data.push(d);
-            }
+            walk_index = $('#walk_select option:selected').val();
+            $.ajax({
+                type: 'GET',
+                url: 'sequence.py',
+                data: {'index': walk_index},
+                dataType: 'json',
+                success: function (sequence, textStatus, jqXHR) {
+                    // load sequence
+                    // count down?
+                    // start playing
+                    console.log(sequence);
+                    // window.ondevicemotion = function(event) {
+                    //     var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
+                    //     $('#display_x').html(d[1]);
+                    //     $('#display_y').html(d[2]);
+                    //     $('#display_z').html(d[3]);
+                    //     walk_data.push(d);
+                    // }
+                },
+                error: function () {
+                    alert("Failed: " + textStatus);
+                    $('#walk_select').show();
+                    $('#start_btn').show();                    
+                }
+            }); 
         }
 
         function stopLog () {
@@ -51,6 +66,7 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Failed: " + textStatus);
                     walk_data = [];
+                    $('#walk_select').show();
                     $('#start_btn').show();                    
                 }
             });
