@@ -6,6 +6,9 @@
         var walk_data = [];
         var walk_index = null;
 
+        var context = null;
+        var buffers = {};        
+
         function timestamp () {
             return new Date().getTime()
         }
@@ -31,17 +34,19 @@
                 data: {'index': walk_index},
                 dataType: 'json',
                 success: function (sequence, textStatus, jqXHR) {
-                    // load sequence
-                    // count down?
-                    // start playing
-                    console.log(sequence);
-                    // window.ondevicemotion = function(event) {
-                    //     var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
-                    //     $('#display_x').html(d[1]);
-                    //     $('#display_y').html(d[2]);
-                    //     $('#display_z').html(d[3]);
-                    //     walk_data.push(d);
-                    // }
+                    for (note_index in sequence) {
+                        var note = sequence[note_index];
+                        var time = note[0] / 1000.0;
+                        var name = note[1];                        
+                        playSound(name, time);
+                    }
+                    window.ondevicemotion = function(event) {
+                        var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
+                        $('#display_x').html(d[1]);
+                        $('#display_y').html(d[2]);
+                        $('#display_z').html(d[3]);
+                        walk_data.push(d);
+                    }
                 },
                 error: function () {
                     alert("Failed: " + textStatus);
@@ -72,10 +77,41 @@
             });
         }
 
+        function loadSound (name, url) {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.responseType = 'arraybuffer';
+            request.onload = function() {
+                context.decodeAudioData(request.response, function(buffer) {
+                    buffers[name] = buffer;
+                    console.log("Loaded " + name + " (" + url +")");                    
+                }, null);
+            }
+            request.send();
+        }
+
+        function playSound (name, time) {
+            console.log('play ' + name + ' at ' + time);
+            buffer = buffers[name];
+            var source = context.createBufferSource(); // creates a sound source
+            source.buffer = buffer;                    // tell the source which sound to play
+            source.connect(context.destination);       // connect the source to the context's destination (the speakers)
+            source.noteOn(time);                       // play the source now
+        }        
+
         $(document).ready(function() {                   
             $('#start_btn').hide();
             $('#stop_btn').hide();
             $('#readings').hide();            
+
+            try {
+                context = new webkitAudioContext();
+            } catch(e) {
+                alert("Web Audio API is not supported in this browser");
+            }            
+
+            loadSound('left', "left.wav");
+            loadSound('right', "right.wav");            
         });  
 
     </script>
