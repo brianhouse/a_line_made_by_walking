@@ -21,6 +21,13 @@ def process_walk(index, data):
     ys = sp.resample(ts, data[:,2], total_samples)
     zs = sp.resample(ts, data[:,3], total_samples)
 
+    # skip 3 seconds for putting the phone in the pocket
+    skip = 3000
+    xs = xs[skip:]
+    ys = ys[skip:]
+    zs = zs[skip:]
+    total_samples -= skip
+
     # get 3d vector
     ds = np.sqrt(np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2))
 
@@ -39,16 +46,32 @@ def process_walk(index, data):
 
     # detect peaks
     # lookahead should be the minimum time of a step, maybe .3s, 300ms
-    peaks, valleys = sp.detect_peaks(ds, lookahead=300, delta=.1)
-    peaks = [peak for peak in peaks if peak[1] > av * 1.2]
-    valley = [valley for valley in valleys if valley[1] < av * 0.8]
-    log.info("PEAKS %s" % peaks)
-    log.info("VALLEYS %s" % valleys)
+    peaks, valleys = sp.detect_peaks(ds, lookahead=300, delta=0.15)
+    if peaks[0][0] == 0:
+        peaks = peaks[1:]
+    # peaks = [peak for peak in peaks if peak[1] > av * 1.2]
+    # valleys = [valley for valley in valleys if valley[1] < av * 0.8]
+    peaks = np.array(peaks)
+    valleys = np.array(valleys)
+    log.info("PEAKS %s" % len(peaks))
+    log.info("VALLEYS %s" % len(valleys))
 
     if not (len(peaks) and len(valleys)):
         log.info("No footsteps detected")
         return
 
+    # start = np.min((np.min(peaks[:,0]), np.min(valleys[:,0])))
+    start = np.min(peaks[:,0])
+    log.debug("START %s" % start)
+    xs = xs[start:]
+    ys = ys[start:]
+    zs = zs[start:]
+    ds = ds[start:]
+    peaks = [(peak[0] - start, peak[1]) for peak in peaks]
+    valleys = [(valley[0] - start, valley[1]) for valley in valleys]
+    total_samples -= start
+
+    # print out
     log.info("Saving sequence (%s)..." % index)
     db = CrashDB("sequence_data.json")
     ## will have to change this
@@ -99,7 +122,7 @@ if __name__ == "__main__":
         db.close()
     else:
         db.close()    
-        process_walk(data)
+        process_walk(index, data)
 
 
 # ## other ideas
@@ -127,7 +150,7 @@ long pause can reset.
 
 do people always start walking with the same foot?
 
-can we recognize and throw out the phone scrambling at the beginning and end?
+can we recognize and throw out the phone scrambling at the beginning and end? -- we can skip X seconds
 
 """
 
