@@ -12,7 +12,7 @@ try:
     index = page.form['index']
     data = db[index]
     page.json(data)
-except:
-    page.error("Index does not exist")
+except Exception as e:
+    page.error("Index does not exist (%s)" % log.exc(e))
 
 db.close()
