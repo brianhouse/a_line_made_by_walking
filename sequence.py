@@ -7,7 +7,6 @@ from process import process_walk
 
 
 db = CrashDB("sequence_data.json")    
-log.error(db)
 
 try:
     index = page.form['index']
