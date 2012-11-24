@@ -11,6 +11,13 @@ on selection, there is playback.
 
 not bad.
 
+///
+
+
+have the sounds pan
+need to log the GPS coordinates and real start time
+
+
 
 
 ///////

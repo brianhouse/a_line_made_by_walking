@@ -22,6 +22,11 @@
             }
         }
 
+        function activateAudio () {
+            playSound('left', 0);
+            startLog();
+        }
+
         function startLog () {
             $('#walk_select').hide();
             $('#start_btn').hide();
@@ -35,7 +40,11 @@
                 dataType: 'json',
                 success: function (sequence, textStatus, jqXHR) {
                     for (var i=0; i<4; i++) {
-                        playSound('left', i);    // should be a count/click sound
+                        if (i % 2 == 0) {
+                            playSound('left', i);    // should be a count/click sound
+                        } else {
+                            playSound('right', i);
+                        }
                     }
                     for (note_index in sequence) {
                         var note = sequence[note_index];
@@ -43,7 +52,6 @@
                         var name = note[1];                        
                         playSound(name, time);
                     }
-                    alert('activating');
                     window.ondevicemotion = function(event) {
                         var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
                         $('#display_x').html(d[1]);
@@ -55,7 +63,8 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Sequence request failed: " + textStatus);
                     $('#walk_select').show();
-                    $('#start_btn').show();                    
+                    $('#start_btn').show();     
+                    $('#stop_btn').hide();                    
                 }
             }); 
         }
@@ -124,14 +133,17 @@
 
 {% block body %}
 
+    <table width="100%" height="100%"><tr><td align="center" valign="center">
+
     <select id="walk_select" onChange="checkSelection()">
         <option value=""></option>
     {% for timestamp, date in options.items() %}
         <option value="{{ timestamp}}">{{ date }}</a>
     {% endfor %}
     </select>
+    <br />
 
-    <input id="start_btn" type="button" onClick="startLog()" value="START" />
+    <input id="start_btn" type="button" onClick="activateAudio()" value="START" />
     <input id="stop_btn" type="button" onClick="stopLog()" value="STOP" />
 
     <div id="readings">
@@ -139,5 +151,7 @@
         Y: <span id="display_y"></span><br />
         Z: <span id="display_z"></span><br />
     </div>
+
+    </td></tr></table>    
 {% endblock body %}
 
