@@ -43,6 +43,7 @@
                         var name = note[1];                        
                         playSound(name, time);
                     }
+                    alert('activating');
                     window.ondevicemotion = function(event) {
                         var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
                         $('#display_x').html(d[1]);
@@ -63,11 +64,7 @@
             $('#stop_btn').hide();
             $('#readings').hide();
             window.ondevicemotion = function(event) { };
-            if (!walk_data.length) {
-                walk_data = [[0, 100, 200, 300], [1000, 100, 200, 300]];
-            }
             walk_data = JSON.stringify(walk_data);            
-            console.log(walk_data);            
             $.ajax({
                 type: 'POST',
                 url: 'index.py', 
