@@ -52,7 +52,7 @@
                         walk_data.push(d);
                     }
                 },
-                error: function () {
+                error: function (jqXHR, textStatus, errorThrown) {
                     alert("Sequence request failed: " + textStatus);
                     $('#walk_select').show();
                     $('#start_btn').show();                    
