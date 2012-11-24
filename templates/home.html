@@ -5,6 +5,7 @@
 
         var walk_data = [];
         var walk_index = null;
+        var num_walks = 0;
 
         var context = null;
         var buffers = {};        
@@ -14,8 +15,10 @@
         }
 
         function checkSelection () {
+            console.log("checkSelection");
             walk_index = $('#walk_select option:selected').val();
-            if (walk_index.length) {
+            num_walks = $('#walk_select option').length;
+            if (num_walks <= 1 || walk_index.length) {
                 $('#start_btn').show();
             } else {
                 $('#start_btn').hide();
@@ -23,7 +26,7 @@
         }
 
         function activateAudio () {
-            playSound('left', 0);
+            playSound('left', 0, 0.0); // iOS needs this
             startLog();
         }
 
@@ -41,16 +44,16 @@
                 success: function (sequence, textStatus, jqXHR) {
                     for (var i=0; i<4; i++) {
                         if (i % 2 == 0) {
-                            playSound('left', i);    // should be a count/click sound
+                            playSound('left', i, 1.0);    // should be a count/click sound
                         } else {
-                            playSound('right', i);
+                            playSound('right', i, 1.0);
                         }
                     }
                     for (note_index in sequence) {
                         var note = sequence[note_index];
                         var time = (note[0] / 1000.0) + 4;
                         var name = note[1];                        
-                        playSound(name, time);
+                        playSound(name, time, 1.0);
                     }
                     window.ondevicemotion = function(event) {
                         var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
@@ -104,13 +107,16 @@
             request.send();
         }
 
-        function playSound (name, time) {
+        function playSound (name, time, volume) {
             console.log('play ' + name + ' at ' + time);
             buffer = buffers[name];
-            var source = context.createBufferSource(); // creates a sound source
-            source.buffer = buffer;                    // tell the source which sound to play
-            source.connect(context.destination);       // connect the source to the context's destination (the speakers)
-            source.noteOn(time);                       // play the source now
+            var source = context.createBufferSource();  // creates a sound source
+            source.buffer = buffer;                     // tell the source which sound to play
+            var gain = context.createGainNode();        // create a gain node
+            source.connect(gain);                       // connect the gain to the source
+            gain.connect(context.destination);          // connect the gain to the destination
+            gain.gain.value = volume;                   // set the volume
+            source.noteOn(time);                        // play the source now
         }        
 
         $(document).ready(function() {                   
@@ -125,7 +131,9 @@
             }            
 
             loadSound('left', "left.wav");
-            loadSound('right', "right.wav");            
+            loadSound('right', "right.wav");    
+
+            checkSelection();        
         });  
 
     </script>

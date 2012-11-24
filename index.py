@@ -15,7 +15,7 @@ if page.method == 'POST':
     if not len(data):
         page.error("No data")
         exit()
-    log.info("data: %s" % data)
+    # log.debug("data: %s" % data)
     index = int(time.time())
     log.info("Saving data...")
     db = CrashDB("walk_data.json")

@@ -7,12 +7,14 @@ from process import process_walk
 
 
 db = CrashDB("sequence_data.json")    
-
-try:
-    index = page.form['index']
-    data = db[index]
-    page.json(data)
-except Exception as e:
-    page.error("Index does not exist (%s)" % log.exc(e))
+if 'index' not in page.form or not len(page.form['index']):
+    page.json([])
+else:
+    try:
+        index = page.form['index']
+        data = db[index]
+        page.json(data)
+    except Exception as e:
+        page.error("Index does not exist (%s)" % log.exc(e))
 
 db.close()

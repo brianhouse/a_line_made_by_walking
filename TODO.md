@@ -13,7 +13,7 @@ not bad.
 
 ///
 
-
+make the activate sound zero volume
 have the sounds pan
 need to log the GPS coordinates and real start time
 
