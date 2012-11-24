@@ -45,6 +45,10 @@ def process_walk(index, data):
     log.info("PEAKS %s" % peaks)
     log.info("VALLEYS %s" % valleys)
 
+    if not (len(peaks) and len(valleys)):
+        log.info("No footsteps detected")
+        return
+
     log.info("Saving sequence (%s)..." % index)
     db = CrashDB("sequence_data.json")
     ## will have to change this
@@ -55,11 +59,10 @@ def process_walk(index, data):
     db[index] = sequence
     db.close()
 
-    if __name__ == "__main__":
-        plot(xs, ys, zs, ds, peaks, valleys, total_samples)
+    plot(index, xs, ys, zs, ds, peaks, valleys, total_samples)
 
 
-def plot(xs, ys, zs, ds, peaks, valleys, total_samples):
+def plot(index, xs, ys, zs, ds, peaks, valleys, total_samples):
 
     try:
         from housepy import drawing
