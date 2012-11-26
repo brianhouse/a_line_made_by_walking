@@ -31,10 +31,15 @@
 
         function startWalk () {
             playSound('left', 0, 0.0); // iOS needs this
-            navigator.geolocation.getCurrentPosition(getGeoLocation);       
+            playSound('right', 0, 0.0); // iOS needs this
+            setTimeout(getGeoLocation, 1000);
         }
 
-        function getGeoLocation(location) {
+        function getGeoLocation() {
+            navigator.geolocation.getCurrentPosition(receiveGeoLocation);       
+        }
+
+        function receiveGeoLocation(location) {
             lon = location.coords.longitude;
             lat = location.coords.latitude;
             startLog();            
@@ -50,7 +55,8 @@
                 url: 'sequence.py',
                 data: {'index': walk_index},
                 dataType: 'json',
-                success: function (sequence, textStatus, jqXHR) {
+                success: function (data, textStatus, jqXHR) {
+                    sequence = data['steps'];
                     for (var i=0; i<4; i++) {
                         if (i % 2 == 0) {
                             playSound('left', i, 1.0);
