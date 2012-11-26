@@ -25,8 +25,11 @@ need to log the GPS coordinates and real start time
 conceptual justifications:
 
 - being in someone else's shoes, enforces a rhythm
-- data feedback
+- data feedback: this happens on a media and society scale, meaning in demonstrating locally
 - constrained in public space
+
+
+for testing, simultaneously record audio for ground truth
 
 
 
@@ -49,3 +52,30 @@ conceptual justifications:
         //         }
         //     });
         // }
+
+
+
+
+//
+
+for presentation:
+
+make a presentation outline, with talking points
+
+add gps, make sure we have real start time
+
+need several real walks
+show the signal processing charts
+make some overlayed walk charts
+
+points:
+- also doing the video analysis, a bit stalled. almanac needs a larger effort, going to make it a class unit.
+- needed to bang something out here
+- mention previous attempts, show the arduino, apologize for all the technical work
+- relate it to the almanac (is it one aspect?)
+- being in someone else's shoes, enforces a rhythm
+- data feedback: this happens on a media and society scale, meaning in demonstrating locally
+- constrained in public space
+- could be distributed as an app
+
+

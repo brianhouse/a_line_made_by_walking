@@ -3,12 +3,16 @@
 {% block head %}
     <script type="text/javascript">
 
-        var walk_data = [];
         var walk_index = null;
         var num_walks = 0;
 
         var context = null;
         var buffers = {};        
+
+        var accel_data = [];
+        var start_time = null;
+        var lon = null;
+        var lat = null;
 
         function timestamp () {
             return new Date().getTime()
@@ -25,16 +29,21 @@
             }
         }
 
-        function activateAudio () {
+        function startWalk () {
             playSound('left', 0, 0.0); // iOS needs this
-            startLog();
+            navigator.geolocation.getCurrentPosition(getGeoLocation);       
         }
+
+        function getGeoLocation(location) {
+            lon = location.coords.longitude;
+            lat = location.coords.latitude;
+            startLog();            
+        }                        
 
         function startLog () {
             $('#walk_select').hide();
             $('#start_btn').hide();
             $('#stop_btn').show();
-            $('#readings').show();
             walk_index = $('#walk_select option:selected').val();
             $.ajax({
                 type: 'GET',
@@ -44,7 +53,7 @@
                 success: function (sequence, textStatus, jqXHR) {
                     for (var i=0; i<4; i++) {
                         if (i % 2 == 0) {
-                            playSound('left', i, 1.0);    // should be a count/click sound
+                            playSound('left', i, 1.0);
                         } else {
                             playSound('right', i, 1.0);
                         }
@@ -55,13 +64,7 @@
                         var name = note[1];                        
                         playSound(name, time, 1.0);
                     }
-                    window.ondevicemotion = function(event) {
-                        var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
-                        $('#display_x').html(d[1]);
-                        $('#display_y').html(d[2]);
-                        $('#display_z').html(d[3]);
-                        walk_data.push(d);
-                    }
+                    setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Sequence request failed: " + textStatus);
@@ -72,10 +75,25 @@
             }); 
         }
 
-        function stopLog () {
+        function startRecording () {
+            $('#readings').show();
+            if (start_time == null) {
+                start_time = timestamp();
+            }
+            window.ondevicemotion = function(event) {
+                var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
+                $('#display_x').html(d[1]);
+                $('#display_y').html(d[2]);
+                $('#display_z').html(d[3]);
+                accel_data.push(d);
+            }
+        }
+
+        function stopWalk () {
             $('#stop_btn').hide();
             $('#readings').hide();
             window.ondevicemotion = function(event) { };
+            var walk_data = {'accel_data': accel_data, 'location': {'lon': lon, 'lat': lat}, 'start_time': start_time};
             walk_data = JSON.stringify(walk_data);            
             $.ajax({
                 type: 'POST',
@@ -87,7 +105,10 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Log failed: " + textStatus);
-                    walk_data = [];
+                    accel_data = [];
+                    start_time = null;
+                    lon = null;
+                    lat = null;
                     $('#walk_select').show();
                     $('#start_btn').show();                    
                 }
@@ -120,6 +141,7 @@
         }        
 
         $(document).ready(function() {                   
+
             $('#start_btn').hide();
             $('#stop_btn').hide();
             $('#readings').hide();            
@@ -151,8 +173,8 @@
     </select>
     <br />
 
-    <input id="start_btn" type="button" onClick="activateAudio()" value="START" />
-    <input id="stop_btn" type="button" onClick="stopLog()" value="STOP" />
+    <input id="start_btn" class="btn" type="button" onClick="startWalk()" value="START" />
+    <input id="stop_btn" class="btn" type="button" onClick="stopWalk()" value="STOP" />
 
     <div id="readings">
         X: <span id="display_x"></span><br />

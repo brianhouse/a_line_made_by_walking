@@ -6,10 +6,13 @@ from housepy import log, config, science
 from housepy import signal_processing as sp
 from housepy.crashdb import CrashDB, CrashDBError
 
-def process_walk(index, data):
+def process_walk(data):
+
+    index = data['start_time']
+    location = data['location']
 
     # get data    
-    data = np.array(data)
+    data = np.array(data['accel_data'])
     ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
 
     # let's sample every millisecond, so the time of the last reading is how many samples we need
@@ -79,7 +82,7 @@ def process_walk(index, data):
     for p, peak in enumerate(peaks):
         foot = 'left' if p % 2 == 0 else 'right'
         sequence.append((peak[0], foot))
-    db[index] = sequence
+    db[index] = {'steps': sequence, 'location': location, 'start_time': index}
     db.close()
 
     plot(index, xs, ys, zs, ds, peaks, valleys, total_samples)
