@@ -79,3 +79,11 @@ points:
 - could be distributed as an app
 
 
+//
+
+
+panning: view-source:http://chromium.googlecode.com/svn/trunk/samples/audio/shiny-drum-machine.html
+
+
+dude, incidentally, you can totally make a web synthesizer for a server running a braid sequencer. sick!
+

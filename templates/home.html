@@ -57,16 +57,17 @@
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
                     sequence = data['steps'];
+                    var start_time = context.currentTime;
                     for (var i=0; i<4; i++) {
                         if (i % 2 == 0) {
-                            playSound('left', i, 1.0);
+                            playSound('left', start_time + i, 1.0);
                         } else {
-                            playSound('right', i, 1.0);
+                            playSound('right', start_time + i, 1.0);
                         }
                     }
                     for (note_index in sequence) {
                         var note = sequence[note_index];
-                        var time = (note[0] / 1000.0) + 4;
+                        var time = start_time + (note[0] / 1000.0) + 4;
                         var name = note[1];                        
                         playSound(name, time, 1.0);
                     }
@@ -143,7 +144,7 @@
             source.connect(gain);                       // connect the gain to the source
             gain.connect(context.destination);          // connect the gain to the destination
             gain.gain.value = volume;                   // set the volume
-            source.noteOn(time);                        // play the source now
+            source.noteOn(time);                        // play the source in x seconds
         }        
 
         $(document).ready(function() {                   
