@@ -142,6 +142,8 @@
 
         $(document).ready(function() {                   
 
+            navigator.geolocation.getCurrentPosition(function () { });       // just for getting permission
+
             $('#start_btn').hide();
             $('#stop_btn').hide();
             $('#readings').hide();            
@@ -165,7 +167,7 @@
 
     <table width="100%" height="100%"><tr><td align="center" valign="center">
 
-    <select id="walk_select" onChange="checkSelection()">
+    <select id="walk_select" onChange="checkSelection()" class="btn">
         <option value=""></option>
     {% for timestamp, date in options.items() %}
         <option value="{{ timestamp}}">{{ date }}</a>

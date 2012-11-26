@@ -33,6 +33,6 @@ else:
     db = CrashDB("sequence_data.json")    
     options = {}
     for timestamp in db:
-        options[timestamp] = datetime.datetime.fromtimestamp(float(timestamp) / 1000.0)
+        options[timestamp] = datetime.datetime.fromtimestamp(int(float(timestamp) / 1000.0))
     db.close()        
     page.render("home.html", {'options': options})
