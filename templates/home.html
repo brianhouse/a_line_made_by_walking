@@ -16,6 +16,7 @@
         var geo_interval = null;
 
         function loadSound (name, url) {
+            console.log("loadSound");
             var request = new XMLHttpRequest();
             request.open('GET', url, true);
             request.responseType = 'arraybuffer';
@@ -56,6 +57,7 @@
         }
 
         function startWalk () {
+            console.log("startWalk");
             $('#walk_select').hide();
             $('#start_btn').hide();            
             playSound('left', 0, 0.0); // iOS needs this
@@ -64,6 +66,7 @@
         }
 
         function startLog () {
+            console.log("startLog");
             $('#stop_btn').show();
             walk_index = $('#walk_select option:selected').val();
             $.ajax({
@@ -101,7 +104,7 @@
             console.log("startRecording");
             $('#readings').show();
             getGeoLocation();
-            geo_interval = setInterval(getGeoLocation, 10000);            
+            //geo_interval = setInterval(getGeoLocation, 10000);            
             start_time = timestamp();
             window.ondevicemotion = function(event) {
                 var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
@@ -122,16 +125,18 @@
         }                                
 
         function stopWalk () {
+            console.log("stopWalk");
             stop_time = timestamp();
+            window.ondevicemotion = function(event) { };            
             getGeoLocation();
             clearInterval(geo_interval);
-            stopLog();
+            sendLog();
         }
 
-        function stopLog () {
+        function sendLog () {
+            console.log("sendLog");
             $('#stop_btn').hide();
             $('#readings').hide();
-            window.ondevicemotion = function(event) { };
             var duration = stop_time - start_time;
             var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration};
             walk_data = JSON.stringify(walk_data);            
