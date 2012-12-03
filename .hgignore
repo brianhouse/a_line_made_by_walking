@@ -15,3 +15,5 @@ docs
 charts/*.png
 walk_data.json
 sequence_data.json
+documentation
+old_data

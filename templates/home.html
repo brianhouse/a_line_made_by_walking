@@ -74,7 +74,8 @@
                     setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert("Sequence request failed: " + textStatus);
+                    alert("Sequence request failed:\n" + errorThrown);
+                    console.log(jqXHR);
                     $('#walk_select').show();
                     $('#start_btn').show();     
                     $('#stop_btn').hide();                    
@@ -111,7 +112,7 @@
                     window.location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert("Log failed: " + textStatus);
+                    alert("Log failed: " + errorThrown);
                     accel_data = [];
                     start_time = null;
                     lon = null;
@@ -176,7 +177,7 @@
 
     <select id="walk_select" onChange="checkSelection()" class="select">
         <option value=""></option>
-    {% for timestamp, date in options.items() %}
+    {% for timestamp, date in options | dictsort | reverse %}
         <option value="{{ timestamp}}">{{ date }}</a>
     {% endfor %}
     </select>

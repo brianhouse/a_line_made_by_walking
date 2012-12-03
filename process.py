@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, json
+import sys, json, time
 import numpy as np
 from housepy import log, config, science
 from housepy import signal_processing as sp
@@ -31,6 +31,16 @@ def process_walk(data):
     zs = zs[skip:]
     total_samples -= skip
 
+
+    # for testing
+    log.debug(total_samples)
+    xs = xs[(30 * 1000):(40 * 1000)]
+    ys = ys[(30 * 1000):(40 * 1000)]
+    zs = zs[(30 * 1000):(40 * 1000)]
+    total_samples = len(xs)
+    log.debug(total_samples)
+
+
     # get 3d vector
     ds = np.sqrt(np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2))
 
@@ -49,11 +59,9 @@ def process_walk(data):
 
     # detect peaks
     # lookahead should be the minimum time of a step, maybe .3s, 300ms
-    peaks, valleys = sp.detect_peaks(ds, lookahead=300, delta=0.15)
+    peaks, valleys = sp.detect_peaks(ds, lookahead=150, delta=0.15)
     if peaks[0][0] == 0:
         peaks = peaks[1:]
-    # peaks = [peak for peak in peaks if peak[1] > av * 1.2]
-    # valleys = [valley for valley in valleys if valley[1] < av * 0.8]
     peaks = np.array(peaks)
     valleys = np.array(valleys)
     log.info("PEAKS %s" % len(peaks))
@@ -62,6 +70,8 @@ def process_walk(data):
     if not (len(peaks) and len(valleys)):
         log.info("No footsteps detected")
         return
+
+    peaks = valleys
 
     # start = np.min((np.min(peaks[:,0]), np.min(valleys[:,0])))
     start = np.min(peaks[:,0])
@@ -77,7 +87,7 @@ def process_walk(data):
     # print out
     log.info("Saving sequence (%s)..." % index)
     db = CrashDB("sequence_data.json")
-    ## will have to change this
+    ## will have to change this to real right/lefts
     sequence = []
     for p, peak in enumerate(peaks):
         foot = 'left' if p % 2 == 0 else 'right'
@@ -98,7 +108,7 @@ def plot(index, xs, ys, zs, ds, peaks, valleys, total_samples):
 
     # plot
     ctx = drawing.Context(5000, 600, relative=True, flip=True)
-    ctx.line(200.0 / total_samples, 0.5, 400.0 / total_samples, 0.5, thickness=10.0)
+    ctx.line(200.0 / total_samples, 0.5, 350.0 / total_samples, 0.5, thickness=10.0)
     ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.5))
     ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
     ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.5))
@@ -111,7 +121,9 @@ def plot(index, xs, ys, zs, ds, peaks, valleys, total_samples):
         x, y = valley
         x = float(x) / total_samples
         ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
-    ctx.image.save("charts/%s.png" % index, "PNG")
+    ctx.image.save("charts/%s_%s.png" % (index, int(time.time())), "PNG")
+    if __name__ == "__main__":
+        ctx.show()
 
 
 if __name__ == "__main__":
@@ -125,7 +137,7 @@ if __name__ == "__main__":
         db.close()
     else:
         db.close()    
-        process_walk(index, data)
+        process_walk(data)
 
 
 # ## other ideas
@@ -133,28 +145,4 @@ if __name__ == "__main__":
 # # find 'jerks'
 # dr = science.derivative(ds)
 # dr = sp.normalize(dr)
-
-
-"""
-
-ok. so that kind of seems to work.
-
-to get the exact footstep part, halfway between a peak and a valley, though it doesnt so much matter...
-
-filling in footsteps based on a harmonic oscillator or something would really be great
-
-the length of the connection lines could almost allow us to infer whether it is a right or left
-
-if it's long, it's right; short, left. 
-
-but they have to alternate. so some kind of windowed average. this should happen after filling the missing teeth.
-
-long pause can reset.
-
-do people always start walking with the same foot?
-
-can we recognize and throw out the phone scrambling at the beginning and end? -- we can skip X seconds
-
-"""
-
 
