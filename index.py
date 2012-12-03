@@ -15,7 +15,6 @@ if page.method == 'POST':
     if not len(data):
         page.error("No data")
         exit()
-    # log.debug("data: %s" % data)
     index = data['start_time']
     log.info("Saving data...")
     db = CrashDB("walk_data.json")
@@ -25,7 +24,7 @@ if page.method == 'POST':
     try:    
         process_walk(data)
     except Exception as e:
-        page.error("Could not process: %s" % e)
+        page.error("Could not process: %s" % log.exc(e))
         exit()
     log.info("--> done")
     page.text("OK")

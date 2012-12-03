@@ -8,12 +8,16 @@ from housepy.crashdb import CrashDB, CrashDBError
 
 def process_walk(data):
 
+    # store data
     index = data['start_time']
-    start_location = data['start_location']
-    stop_location = data['stop_location'] if 'stop_location' in data else None
+    duration = data['duration']
+    geo_data = data['geo_data']
 
     # get data    
     data = np.array(data['accel_data'])
+    if not len(data):
+        log.info("--> no acceleration data")
+        return
     ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
 
     # let's sample every millisecond, so the time of the last reading is how many samples we need
@@ -93,7 +97,7 @@ def process_walk(data):
     for p, peak in enumerate(peaks):
         foot = 'left' if p % 2 == 0 else 'right'
         sequence.append((peak[0], foot))
-    db[index] = {'steps': sequence, 'start_location': start_location, 'stop_location': stop_location, 'start_time': index}
+    db[index] = {'steps': sequence, 'geo_data': geo_data, 'start_time': index, 'duration': duration}
     db.close()
 
     plot(index, xs, ys, zs, ds, peaks, valleys, total_samples)
