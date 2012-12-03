@@ -141,9 +141,9 @@ quantization?
 
 for final:
 
-- stop sounds
+- stop sounds (used universal mute)
+- map paths (not possible with mapbox, lame)
 /
-- map paths
 - identity, based on phone
 - some type of total visualization/sonification
 - countdown sounds different sounds

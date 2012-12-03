@@ -23,18 +23,18 @@
                 data: {'index': walk_index},
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
-                    console.log(data);
+                    data['geo_data'].push([-71.400500, 41.819900]);
                     var start_location = data['geo_data'][0];
                     var stop_location = data['geo_data'][data['geo_data'].length - 1];
                     markers = [];
                     markers.push({  geometry: {coordinates: [start_location[0], start_location[1]]}, 
                                     properties: {'marker-color': '#000', 'marker-symbol': 'circle'}
-                                });
-                    map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });
-                    markers.push({  geometry: {coordinates: [stop_location['lon'], stop_location['lat']]}, 
-                                    properties: {'marker-color': '#000', 'marker-symbol': 'circle'}
-                                });
+                                });                    
+                    markers.push({  geometry: {coordinates: [stop_location[0], stop_location[1]]}, 
+                                    properties: {'marker-color': '#000', 'marker-symbol': 'embassy'}
+                                });                    
                     marker_layer.features(markers);
+                    map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Sequence request failed:\n" + errorThrown);
