@@ -5,7 +5,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">        
     <meta name="apple-touch-fullscreen" content="yes" />    
     <meta name="viewport" content="width=320px; initial-scale=1.0; minimum-scale=1.0, maximum-scale=1.0; user-scalable=0;" /> 
+    <link href='http://api.tiles.mapbox.com/mapbox.js/v0.6.6/mapbox.css' rel='stylesheet' />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <script src='http://api.tiles.mapbox.com/mapbox.js/v0.6.6/mapbox.js'></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     {% block head %}
     
@@ -15,12 +17,35 @@
             font: 18px monospace;
             background-color: black;
             color: white;
+            margin: 0px;
+            padding: 0px;
+        }
+        div {
+            position: absolute;
         }
         .btn {
             font: 50px monospace;
         }
-        .select {
+        #map {
+            left: 0px;
+            top: 0px;
+            width: 320px;
+            height: 480px;
+            border: none;
+            z-index: 0;
+        }
+        #walk_select {
+            position: absolute;
             font: 24px monospace;
+            left: 10px;
+            top: 440px;
+            z-index: 100;
+        }
+        #readings {
+            width: 300px;
+            height: 75px;
+            padding: 10px;
+            color: black;
         }
     </style>
 </head>

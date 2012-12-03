@@ -9,7 +9,8 @@ from housepy.crashdb import CrashDB, CrashDBError
 def process_walk(data):
 
     index = data['start_time']
-    location = data['location']
+    start_location = data['start_location']
+    stop_location = data['stop_location'] if 'stop_location' in data else None
 
     # get data    
     data = np.array(data['accel_data'])
@@ -32,13 +33,13 @@ def process_walk(data):
     total_samples -= skip
 
 
-    # for testing
-    log.debug(total_samples)
-    xs = xs[(30 * 1000):(40 * 1000)]
-    ys = ys[(30 * 1000):(40 * 1000)]
-    zs = zs[(30 * 1000):(40 * 1000)]
-    total_samples = len(xs)
-    log.debug(total_samples)
+    # # for testing
+    # log.debug(total_samples)
+    # xs = xs[(30 * 1000):(40 * 1000)]
+    # ys = ys[(30 * 1000):(40 * 1000)]
+    # zs = zs[(30 * 1000):(40 * 1000)]
+    # total_samples = len(xs)
+    # log.debug(total_samples)
 
 
     # get 3d vector
@@ -92,7 +93,7 @@ def process_walk(data):
     for p, peak in enumerate(peaks):
         foot = 'left' if p % 2 == 0 else 'right'
         sequence.append((peak[0], foot))
-    db[index] = {'steps': sequence, 'location': location, 'start_time': index}
+    db[index] = {'steps': sequence, 'start_location': start_location, 'stop_location': stop_location, 'start_time': index}
     db.close()
 
     plot(index, xs, ys, zs, ds, peaks, valleys, total_samples)

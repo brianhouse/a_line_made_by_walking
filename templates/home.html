@@ -11,8 +11,35 @@
 
         var accel_data = [];
         var start_time = null;
-        var lon = null;
-        var lat = null;
+        var start_lon = null;
+        var start_lat = null;
+        var stop_lon = null;
+        var stop_lat = null;
+
+        function loadSound (name, url) {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.responseType = 'arraybuffer';
+            request.onload = function() {
+                context.decodeAudioData(request.response, function(buffer) {
+                    buffers[name] = buffer;
+                    console.log("Loaded " + name + " (" + url +")");                    
+                }, null);
+            }
+            request.send();
+        }
+
+        function playSound (name, time, volume) {
+            console.log('play ' + name + ' at ' + time);
+            buffer = buffers[name];
+            var source = context.createBufferSource();  // creates a sound source
+            source.buffer = buffer;                     // tell the source which sound to play
+            var gain = context.createGainNode();        // create a gain node
+            source.connect(gain);                       // connect the gain to the source
+            gain.connect(context.destination);          // connect the gain to the destination
+            gain.gain.value = volume;                   // set the volume
+            source.noteOn(time);                        // play the source in x seconds
+        }                
 
         function timestamp () {
             return new Date().getTime()
@@ -30,24 +57,20 @@
         }
 
         function startWalk () {
+            $('#walk_select').hide();
+            $('#start_btn').hide();            
             playSound('left', 0, 0.0); // iOS needs this
             playSound('right', 0, 0.0); // iOS needs this
-            setTimeout(getGeoLocation, 1000);
+            setTimeout(function () { navigator.geolocation.getCurrentPosition(receiveStartGeoLocation); }, 1000);
         }
 
-        function getGeoLocation() {
-            navigator.geolocation.getCurrentPosition(receiveGeoLocation);       
-        }
-
-        function receiveGeoLocation(location) {
-            lon = location.coords.longitude;
-            lat = location.coords.latitude;
+        function receiveStartGeoLocation(location) {
+            start_lon = location.coords.longitude;
+            start_lat = location.coords.latitude;
             startLog();            
         }                        
 
         function startLog () {
-            $('#walk_select').hide();
-            $('#start_btn').hide();
             $('#stop_btn').show();
             walk_index = $('#walk_select option:selected').val();
             $.ajax({
@@ -98,10 +121,23 @@
         }
 
         function stopWalk () {
+
+            function () { navigator.geolocation.getCurrentPosition(receiveStartGeoLocation); }
+            stopLog();
+
+        }
+
+        function receiveStopGeoLocation(location) {
+            stop_lon = location.coords.longitude;
+            stop_lat = location.coords.latitude;
+            stopLog();
+        }                        
+
+        function stopLog () {
             $('#stop_btn').hide();
             $('#readings').hide();
             window.ondevicemotion = function(event) { };
-            var walk_data = {'accel_data': accel_data, 'location': {'lon': lon, 'lat': lat}, 'start_time': start_time};
+            var walk_data = {'accel_data': accel_data, 'start_location': {'lon': start_lon, 'lat': start_lat}, 'stop_location': {'lon': stop_lon, 'lat': stop_lat}, 'start_time': start_time};
             walk_data = JSON.stringify(walk_data);            
             $.ajax({
                 type: 'POST',
@@ -123,34 +159,9 @@
             });
         }
 
-        function loadSound (name, url) {
-            var request = new XMLHttpRequest();
-            request.open('GET', url, true);
-            request.responseType = 'arraybuffer';
-            request.onload = function() {
-                context.decodeAudioData(request.response, function(buffer) {
-                    buffers[name] = buffer;
-                    console.log("Loaded " + name + " (" + url +")");                    
-                }, null);
-            }
-            request.send();
-        }
-
-        function playSound (name, time, volume) {
-            console.log('play ' + name + ' at ' + time);
-            buffer = buffers[name];
-            var source = context.createBufferSource();  // creates a sound source
-            source.buffer = buffer;                     // tell the source which sound to play
-            var gain = context.createGainNode();        // create a gain node
-            source.connect(gain);                       // connect the gain to the source
-            gain.connect(context.destination);          // connect the gain to the destination
-            gain.gain.value = volume;                   // set the volume
-            source.noteOn(time);                        // play the source in x seconds
-        }        
-
         $(document).ready(function() {                   
 
-            navigator.geolocation.getCurrentPosition(function () { });       // just for getting permission
+            navigator.geolocation.getCurrentPosition(function () { });       // just for getting permission out of the way
 
             $('#start_btn').hide();
             $('#stop_btn').hide();
@@ -166,14 +177,13 @@
             loadSound('right', "right.wav");    
 
             checkSelection();        
+
         });  
 
     </script>
 {% endblock head %}
 
 {% block body %}
-
-    <table width="100%" height="100%"><tr><td align="center" valign="center">
 
     <select id="walk_select" onChange="checkSelection()" class="select">
         <option value=""></option>
@@ -192,6 +202,5 @@
         Z: <span id="display_z"></span><br />
     </div>
 
-    </td></tr></table>    
 {% endblock body %}
 
