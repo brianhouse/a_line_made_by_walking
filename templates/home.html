@@ -182,16 +182,15 @@
         <option value="{{ timestamp}}">{{ date }}</a>
     {% endfor %}
     </select>
-    <br />
-
-    <input id="start_btn" class="btn" type="button" onClick="startWalk()" value="START" />
-    <input id="stop_btn" class="btn" type="button" onClick="stopWalk()" value="STOP" />
 
     <div id="readings">
         X: <span id="display_x"></span><br />
         Y: <span id="display_y"></span><br />
         Z: <span id="display_z"></span><br />
     </div>
+
+    <input id="start_btn" class="btn" type="button" onClick="startWalk()" value="START" />
+    <input id="stop_btn" class="btn" type="button" onClick="stopWalk()" value="STOP" />
 
 {% endblock body %}
 

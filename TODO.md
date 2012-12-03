@@ -147,3 +147,6 @@ for final:
 
 [countdown sounds different...]
 
+
+--> stop sounds
+
