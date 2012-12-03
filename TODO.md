@@ -141,12 +141,11 @@ quantization?
 
 for final:
 
-[need GPS of endpoint, maps]
-[identity, based on phone]
-[some type of total visualization/sonification]
+- stop sounds
+/
+- map paths
+- identity, based on phone
+- some type of total visualization/sonification
+- countdown sounds different sounds
 
-[countdown sounds different...]
-
-
---> stop sounds
 

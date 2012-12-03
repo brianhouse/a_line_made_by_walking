@@ -7,7 +7,8 @@
         var num_walks = 0;
 
         var context = null;
-        var buffers = {};        
+        var buffers = {};  
+        var master_gain_node = null;      
 
         var accel_data = [];
         var geo_data = [];
@@ -32,13 +33,13 @@
         function playSound (name, time, volume) {
             console.log("play " + name + " at " + time);
             buffer = buffers[name];
-            var source = context.createBufferSource();  // creates a sound source
-            source.buffer = buffer;                     // tell the source which sound to play
-            var gain = context.createGainNode();        // create a gain node
-            source.connect(gain);                       // connect the gain to the source
-            gain.connect(context.destination);          // connect the gain to the destination
-            gain.gain.value = volume;                   // set the volume
-            source.noteOn(time);                        // play the source in x seconds
+            var source = context.createBufferSource();       // creates a sound source
+            source.buffer = buffer;                          // tell the source which sound to play
+            var gain_node = context.createGainNode();        // create a gain node
+            source.connect(gain_node);                       // connect the gain to the source
+            gain_node.gain.value = volume;                   // set the volume
+            gain_node.connect(master_gain_node);
+            source.noteOn(time);                             // play the source in x seconds
         }                
 
         function timestamp () {
@@ -104,7 +105,7 @@
             console.log("startRecording");
             $('#readings').show();
             getGeoLocation();
-            //geo_interval = setInterval(getGeoLocation, 10000);            
+            geo_interval = setInterval(getGeoLocation, 10000);            
             start_time = timestamp();
             window.ondevicemotion = function(event) {
                 var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
@@ -128,6 +129,7 @@
             console.log("stopWalk");
             stop_time = timestamp();
             window.ondevicemotion = function(event) { };            
+            master_gain_node.gain.value = 0.0;
             getGeoLocation();
             clearInterval(geo_interval);
             sendLog();
@@ -165,6 +167,8 @@
 
             try {
                 context = new webkitAudioContext();
+                master_gain_node = context.createGainNode();
+                master_gain_node.connect(context.destination);          // connect the gain to the destination
             } catch(e) {
                 alert("Web Audio API is not supported in this browser");
             }            

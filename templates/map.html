@@ -16,6 +16,7 @@
         }
 
         function loadWalk () {
+            console.log("loadWalk");
             $.ajax({
                 type: 'GET',
                 url: 'sequence.py',
@@ -23,20 +24,16 @@
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
                     console.log(data);
-                    var start_location = data['start_location'];
-                    var stop_location = data['stop_location'];
+                    var start_location = data['geo_data'][0];
+                    var stop_location = data['geo_data'][data['geo_data'].length - 1];
                     markers = [];
-                    if (start_location != null) {
-                        markers.push({  geometry: {coordinates: [start_location['lon'], start_location['lat']]}, 
-                                        properties: {'marker-color': '#000', 'marker-symbol': 'circle'}
-                                    });
-                        map.zoom(17).center({ lon: start_location['lon'], lat: start_location['lat'] });
-                    }
-                    if (stop_location != null) {
-                        markers.push({  geometry: {coordinates: [stop_location['lon'], stop_location['lat']]}, 
-                                        properties: {'marker-color': '#000', 'marker-symbol': 'circle'}
-                                    });
-                    }
+                    markers.push({  geometry: {coordinates: [start_location[0], start_location[1]]}, 
+                                    properties: {'marker-color': '#000', 'marker-symbol': 'circle'}
+                                });
+                    map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });
+                    markers.push({  geometry: {coordinates: [stop_location['lon'], stop_location['lat']]}, 
+                                    properties: {'marker-color': '#000', 'marker-symbol': 'circle'}
+                                });
                     marker_layer.features(markers);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
