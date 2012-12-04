@@ -143,9 +143,16 @@ for final:
 
 - stop sounds (used universal mute)
 - map paths (not possible with mapbox, lame)
+
 /
-- identity, based on phone
-- some type of total visualization/sonification
+- integrate map view
 - countdown sounds different sounds
+- some type of total visualization/sonification
+
+
+
+eventually:
+- leaflet seems the better thing to use
+- identity, based on phone
 
 
