@@ -140,18 +140,15 @@ quantization?
 
 
 for final:
-
-- stop sounds (used universal mute)
-- map paths (not possible with mapbox, lame)
-
-/
-- integrate map view
-- countdown sounds different sounds
++ stop sounds (used universal mute)
++ map paths (not possible with mapbox, lame)
++ integrate map view
+- fix long dataset audio event setup
 - some type of total visualization/sonification
 
 
-
 eventually:
+- countdown sounds different sounds
 - leaflet seems the better thing to use
 - identity, based on phone
 
