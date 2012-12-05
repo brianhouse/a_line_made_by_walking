@@ -1,19 +1,28 @@
+// sequence data
 var walk_index = null;
 var num_walks = 0;
+var walk_data = null;
+var sequence = null;
 
+// map
 var map = null;
 var marker_layer = null;        
-var walk_data = null;
 
+// audio
 var context = null;
 var buffers = {};  
-var master_gain_node = null;      
+var master_gain_node = null;   
+var audio_start_time = null;   
 
+// data collection
 var accel_data = [];
 var geo_data = [];
 var start_time = null;
 var stop_time = null;
+
+// polling
 var geo_interval = null;
+var sequence_interval = null;
 
 function loadSound (name, url) {
     console.log("loadSound");
@@ -112,7 +121,7 @@ function startAudio () {
     console.log("startAudio");
     $('#stop_btn').show();
     sequence = walk_data['steps'];
-    var audio_start_time = context.currentTime;
+    audio_start_time = context.currentTime;
     for (var i=0; i<4; i++) {
         if (i % 2 == 0) {
             playSound('left', audio_start_time + i, 1.0);
@@ -120,13 +129,25 @@ function startAudio () {
             playSound('right', audio_start_time + i, 1.0);
         }
     }
-    for (note_index in sequence) {
-        var note = sequence[note_index];
-        var time = audio_start_time + (note[0] / 1000.0) + 4;
+    audio_start_time += 4;  // now starting from after countoff
+    setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going (step starting is corrected for in process.py)
+    queueAudio();
+    sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
+}
+
+function queueAudio () {
+    console.log("queueAudio " + sequence.length);
+    // schedule notes from the queue that are happening in the next 10s or so
+    if (sequence.length == 0) {
+        clearInterval(sequence_interval);
+        return;
+    }
+    do {
+        var note = sequence.shift()
+        var time = audio_start_time + (note[0] / 1000.0);
         var name = note[1];                        
         playSound(name, time, 1.0);
-    }
-    setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going
+    } while ((time - context.currentTime) < 10);    
 }
 
 function startRecording () {
@@ -212,8 +233,8 @@ $(document).ready(function() {
         alert("Web Audio API is not supported in this browser");
     }            
 
-    loadSound('left', "left.wav");
-    loadSound('right', "right.wav");    
+    loadSound('left', "snd/left.wav");
+    loadSound('right', "snd/right.wav");    
 
     checkSelection();        
 
