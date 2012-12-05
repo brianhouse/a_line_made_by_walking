@@ -43,11 +43,12 @@ function playSound (name, time, volume, pan) {
     buffer = buffers[name];
     var source = context.createBufferSource();       // creates a sound source
     source.buffer = buffer;                          // tell the source which sound to play
-    var pan_node = context.createPanner();           // create the panning node
-    source.connect(pan_node);                        // connect the pan to the source        
-    pan_node.setPosition((pan * 20.0) - 10.0, 0, 0); // set panning value (0-1)
+    // var pan_node = context.createPanner();           // create the panning node
+    // source.connect(pan_node);                        // connect the pan to the source        
+    // pan_node.setPosition((pan * 20.0) - 10.0, 0, 0); // set panning value (0-1)
     var gain_node = context.createGainNode();        // create a gain node
-    pan_node.connect(gain_node);                     // connect the gain to the source
+    // pan_node.connect(gain_node);                     // connect the gain to the pan
+    source.connect(gain_node);                       // connect the gain to the source    
     gain_node.gain.value = volume;                   // set the volume    
     gain_node.connect(master_gain_node);             // connect to master
     source.noteOn(time);                             // play the source in x seconds
@@ -78,8 +79,8 @@ function loadWalk () {
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
             walk_data = data;
-            var start_location = data['geo_data'][0];
-            var stop_location = data['geo_data'][data['geo_data'].length - 1];
+            var start_location = data['geo_data'][0].slice(0, 2);
+            var stop_location = data['geo_data'][data['geo_data'].length - 1].slice(0, 2);
             markers = [];
             markers.push({  geometry: {coordinates: start_location}, 
                             properties: {'marker-color': '#000', 'marker-symbol': 'circle', 'marker-size': 'large'}
@@ -88,7 +89,7 @@ function loadWalk () {
                             properties: {'marker-color': '#000', 'marker-symbol': 'embassy', 'marker-size': 'large'}
                         });    
             for (var i=0; i<data['geo_data'].length - 2; i++) {
-                markers.push({  geometry: {coordinates: data['geo_data'][i]},
+                markers.push({  geometry: {coordinates: data['geo_data'][i].slice(0, 2)},
                                 properties: {'marker-color': '#9cf', 'marker-size': 'small', 'image': "http://upload.wikimedia.org/wikipedia/commons/2/2a/Dot.png"}
                             });                        
             }                
@@ -174,7 +175,7 @@ function getGeoLocation () {
 }
 
 function receiveGeoLocation (location) {
-    geo_data.push([location.coords.longitude, location.coords.latitude]);
+    geo_data.push([location.coords.longitude, location.coords.latitude, timestamp()]);
     map.zoom(17).center({lon: location.coords.longitude, lat: location.coords.latitude});
 }                                
 

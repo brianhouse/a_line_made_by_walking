@@ -50,10 +50,9 @@ for final:
 + map paths (not possible with mapbox, lame)
 + integrate map view
 + fix long dataset audio event setup
++ have the sounds pan
 - some type of total visualization/sonification
 
-
-have the sounds pan
 
 eventually:
 - countdown sounds different sounds
@@ -61,5 +60,28 @@ eventually:
 - identity, based on phone
 
 
+## PROBLEMS
 
-panning: view-source:http://chromium.googlecode.com/svn/trunk/samples/audio/shiny-drum-machine.html
+everything works fine first time. 
+
+with audio playback, it's not working.
+
+try without pan.
+
+
+
+### concept
+
+make an equal-timed map. something like this has to exist.
+
+the idea is just a map that is distorted so that two points are the distance apart they would take to traverse.
+
+of course, that's totally dependent on mode of transportation, and stride.
+
+so it can also be past-tense. 
+
+this might work better with openpaths data.
+
+
+
+
