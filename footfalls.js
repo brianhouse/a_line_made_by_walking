@@ -38,15 +38,18 @@ function loadSound (name, url) {
     request.send();
 }
 
-function playSound (name, time, volume) {
+function playSound (name, time, volume, pan) {
     console.log("play " + name + " at " + time);
     buffer = buffers[name];
     var source = context.createBufferSource();       // creates a sound source
     source.buffer = buffer;                          // tell the source which sound to play
+    var pan_node = context.createPanner();           // create the panning node
+    source.connect(pan_node);                        // connect the pan to the source        
+    pan_node.setPosition((pan * 20.0) - 10.0, 0, 0); // set panning value (0-1)
     var gain_node = context.createGainNode();        // create a gain node
-    source.connect(gain_node);                       // connect the gain to the source
-    gain_node.gain.value = volume;                   // set the volume
-    gain_node.connect(master_gain_node);
+    pan_node.connect(gain_node);                     // connect the gain to the source
+    gain_node.gain.value = volume;                   // set the volume    
+    gain_node.connect(master_gain_node);             // connect to master
     source.noteOn(time);                             // play the source in x seconds
 }                
 
@@ -112,8 +115,8 @@ function startWalk () {
     console.log("startWalk");
     $('#walk_select').hide();
     $('#start_btn').hide();            
-    playSound('left', 0, 0.0); // iOS needs this
-    playSound('right', 0, 0.0); // iOS needs this
+    playSound('left', 0, 0.0, 0.0); // iOS needs this
+    playSound('right', 0, 0.0, 0.0); // iOS needs this
     startAudio();
 }
 
@@ -124,9 +127,9 @@ function startAudio () {
     audio_start_time = context.currentTime;
     for (var i=0; i<4; i++) {
         if (i % 2 == 0) {
-            playSound('left', audio_start_time + i, 1.0);
+            playSound('left', audio_start_time + i, 1.0, 0.0);
         } else {
-            playSound('right', audio_start_time + i, 1.0);
+            playSound('right', audio_start_time + i, 1.0, 1.0);
         }
     }
     audio_start_time += 4;  // now starting from after countoff
@@ -138,15 +141,15 @@ function startAudio () {
 function queueAudio () {
     console.log("queueAudio " + sequence.length);
     // schedule notes from the queue that are happening in the next 10s or so
-    if (sequence.length == 0) {
-        clearInterval(sequence_interval);
-        return;
-    }
     do {
+        if (sequence.length == 0) {
+            clearInterval(sequence_interval);
+            return;
+        }
         var note = sequence.shift()
         var time = audio_start_time + (note[0] / 1000.0);
         var name = note[1];                        
-        playSound(name, time, 1.0);
+        playSound(name, time, 1.0, name == 'left' ? 0.0 : 1.0);
     } while ((time - context.currentTime) < 10);    
 }
 
@@ -228,7 +231,7 @@ $(document).ready(function() {
     try {
         context = new webkitAudioContext();
         master_gain_node = context.createGainNode();
-        master_gain_node.connect(context.destination);          // connect the gain to the destination
+        master_gain_node.connect(context.destination);          // connect the master gain to the destination
     } catch(e) {
         alert("Web Audio API is not supported in this browser");
     }            
