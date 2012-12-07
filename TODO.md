@@ -16,6 +16,11 @@
         //     });
         // }
 
+Web Audio API + iPhone:
+- cant queue too many note events
+- HRTF spatialization is too much for the processer if we're also recording accel data
+
+
 ### bugs
 
 when the iphone sleeps, timeout events are no longer fired, so have to keep the phone on
@@ -38,6 +43,10 @@ actually define the shape grouping, the triple of peak shallowvalley peak deepva
 need some kind of relative expectation algorithm
 alternate between expectation and looking for...
 
+/
+
+so the peak detection works, and you can see the two levels. the lesser peaks must be lefts.
+take all the peaks, and cluster them into two clusters? k-means?
 
 
 ### todo
@@ -60,16 +69,6 @@ eventually:
 - identity, based on phone
 
 
-## PROBLEMS
-
-everything works fine first time. 
-
-with audio playback, it's not working.
-
-try without pan.
-
-
-
 ### concept
 
 make an equal-timed map. something like this has to exist.
@@ -82,6 +81,61 @@ so it can also be past-tense.
 
 this might work better with openpaths data.
 
+/
+
+could straight layer the walks and build sound with partials
+
+could have a melody that then turns into a kind of cannon
+
+could link the footsteps with space, and then move through space instead of time
+(what would that do? compensate if people we're going different speeds)
+
+use speed (from GPS) 
+
+what do we have, really?
+
+a collection of onsets, on different voices, grouped together by what number step it is
+
+what kind of variation are we expecting? not a ton, if it's just me on a walk
+
+the canon, with a different line for each walk is probably best, most doable
+
+kind of a deconstruction
+
+could use a historical piece, even, and have it performed...
+
+4 part choral harmony?
+
+/
+
+variations:
+
+- coupling. two people are stuck together in realtime, listening to footfalls and having to conform.
+- group. pick a specific location, and everyone listens to the same pattern. either that pattern is defined by an individual, or is the average of all previous goers.
+- group. everyone goes along a particular route. and then that's averaged, and then I walk that.
+
+bridge reference.
+
+richard long reference.
+
+### indexes
+
+1354851814868
+1354851377010
+1354852238877
+1354852692081
+
+
+### refs
+
+http://en.wikipedia.org/wiki/Hamish_Fulton
+
+Long, A Line Made by Walking (1967)
+
+
+### future issues
+
+crashdb is not going to be scaleable
 
 
 

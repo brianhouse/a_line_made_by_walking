@@ -112,7 +112,7 @@ def plot(index, xs, ys, zs, ds, peaks, valleys, total_samples):
         return
 
     # plot
-    ctx = drawing.Context(5000, 600, relative=True, flip=True)
+    ctx = drawing.Context(50000, 600, relative=True, flip=True)
     ctx.line(200.0 / total_samples, 0.5, 350.0 / total_samples, 0.5, thickness=10.0)
     ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.5))
     ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
