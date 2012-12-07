@@ -9,13 +9,13 @@ import housepy.signal_processing as sp
 # collect notes
 db = CrashDB("sequence_data.json")
 notes = []
-voices = [None]
-channel = 1
+v = 0
+voices = []
 for index, walk in db.items():
-    voices.append(Voice(channel))
+    voices.append(Voice(v + 1))
     for step in walk['steps']:
-        notes.append((step[0], channel, 0 if step[1] == 'left' else 1))
-    channel += 1
+        notes.append((step[0], v, 0 if step[1] == 'left' else 1))
+    v += 1
 db.close()        
 
 # sort and normalize onsets
@@ -29,13 +29,12 @@ notes = [(onsets[i], note[1], note[2]) for (i, note) in enumerate(notes)]
 # for index in db:
 
 for voice in voices:
-    if voice is None:
-        continue
     voice.synth = 'cycle'
     voice.attack = 250
     voice.sustain = 200
     voice.decay = 600
     voice.reverb = 0.7, 0.3, 0.25, 0.5, 0.0
+    voice.chord = C3
 
 DURATION = 20 * 60.0
 
