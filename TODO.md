@@ -48,6 +48,16 @@ alternate between expectation and looking for...
 so the peak detection works, and you can see the two levels. the lesser peaks must be lefts.
 take all the peaks, and cluster them into two clusters? k-means?
 
+/
+
+from kyle:
+
+http://en.wikipedia.org/wiki/Dynamic_time_warping
+
+it does matching like this:
+
+http://www.atasoyweb.net/resimgoster.php?resim=DinamikZamanBukmeAlgoritmasi.png
+
 
 ### todo
 
@@ -117,6 +127,20 @@ variations:
 bridge reference.
 
 richard long reference.
+
+/
+
+in terms of personal documentation, it's the route I take between two significant places, and how the journey between those places is inscribed / takes on meaning over time.
+
+/
+
+presentation:
+
+coupling, group 1, group2, location sig
+show graph, show music, show app
+
+record some more trips on the way tomorrow
+
 
 ### indexes
 
