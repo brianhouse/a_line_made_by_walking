@@ -79,6 +79,11 @@ eventually:
 - identity, based on phone
 
 
+- start button doesnt appear until route is loaded
+- home screen shows location of nearby walks?
+- walk management -- delete, etc
+
+
 ### concept
 
 make an equal-timed map. something like this has to exist.
