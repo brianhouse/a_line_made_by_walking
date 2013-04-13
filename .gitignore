@@ -10,7 +10,7 @@ related_papers
 logs
 config.yaml
 docs
-charts/*.png
+charts/*
 walk_data.json
 sequence_data.json
 documentation

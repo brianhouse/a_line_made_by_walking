@@ -1,7 +1,7 @@
 Footfalls
 =========
 
-Experiments in spatial constraints, in development...
+_Footfollow_ is an experiment in patterns and contraints, data and control. It's also a webapp for iOS and Android. Here's how it works: 1) visit [footfollow.org](http://footfollow.org) on your mobile device and get out your headphones, 2) choose a walk, 3) put your phone in your pocket and listen, 4) what you hear is a click track that matches the footsteps made by the person before you -- can you match them?, 5) your footsteps have now also been recorded, and someone else will listen and walk to them, 6) and so on and so forth.
 
 
 
