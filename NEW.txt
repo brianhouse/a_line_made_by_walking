@@ -1,0 +1,22 @@
+
+
+sqlite?
+
+crashdb might be a problem. use sqlite?
+
+/
+
+browser sanity check
+
+/
+
+big question is generalizing the gait detection.
+
+/
+
+specialized issues: timeouts cease to work when phone sleeps
+
+
+
+
+if the phone is clicked off, does that kill the timeout?

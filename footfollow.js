@@ -1,3 +1,7 @@
+// mapbox
+var mapbox_username = "brianhouse";
+var mapbox_map_id = "124z30te";
+
 // sequence data
 var walk_index = null;
 var num_walks = 0;
@@ -6,6 +10,7 @@ var sequence = null;
 
 // map
 var map = null;
+var current_location_marker;
 var marker_layer = null;        
 
 // audio
@@ -24,8 +29,43 @@ var stop_time = null;
 var geo_interval = null;
 var sequence_interval = null;
 
+/* create the map */
+function initMap () {
+    map = new L.map('map', {
+        layers: new L.TileLayer("http://a.tiles.mapbox.com/v3/" + mapbox_username + ".map-" + mapbox_map_id + "/{z}/{x}/{y}.png"),
+        zoomControl: true,
+        attributionControl: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        boxZoom: false,
+        touchZoom: false,
+        dragging: false,
+        keyboard: false,
+        zoom: 17,
+        minZoom: 10,                    
+        maxZoom: 17
+    });     
+    map.locate({setView: true, watch: true, enableHighAccuracy: true}); // detect current location
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+}
+
+/* when the user's location is found */
+function onLocationFound (e) {
+    if (current_location_marker == null) {
+        current_location_marker = L.circleMarker(e.latlng, {radius: 10, color: "#009dff", stroke: false, fillOpacity: 1.0, clickable: false}).addTo(map);
+    } else {
+        current_location_marker.setLatLng(e.latlng);
+    } 
+}
+
+/* if something goes wrong with finding the user's location */
+function onLocationError (e) {
+    alert(e.message);
+}
+
 function loadSound (name, url) {
-    console.log("loadSound");
+    console.log("loadSound " + name);
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
@@ -59,176 +99,166 @@ function timestamp () {
     return new Date().getTime()
 }
 
-function checkSelection () {
-    console.log("checkSelection");
-    walk_index = $('#walk_select option:selected').val();
-    num_walks = $('#walk_select option').length;
-    if (num_walks <= 1 || walk_index.length) {
-        $('#start_btn').show();
-        loadWalk();
-    } else {
-        $('#start_btn').hide();
-    }
-}
+// function checkSelection () {
+//     console.log("checkSelection");
+//     walk_index = $('#walk_select option:selected').val();
+//     num_walks = $('#walk_select option').length;
+//     if (num_walks <= 1 || walk_index.length) {
+//         $('#start_btn').show();
+//         loadWalk();
+//     } else {
+//         $('#start_btn').hide();
+//     }
+// }
 
-function loadWalk () {
-    console.log("loadWalk");
-    $.ajax({
-        type: 'GET',
-        url: 'sequence.py',
-        data: {'index': walk_index},
-        dataType: 'json',
-        success: function (data, textStatus, jqXHR) {
-            walk_data = data;
-            var start_location = data['geo_data'][0].slice(0, 2);
-            var stop_location = data['geo_data'][data['geo_data'].length - 1].slice(0, 2);
-            markers = [];
-            markers.push({  geometry: {coordinates: start_location}, 
-                            properties: {'marker-color': '#000', 'marker-symbol': 'circle', 'marker-size': 'large'}
-                        });                    
-            markers.push({  geometry: {coordinates: stop_location}, 
-                            properties: {'marker-color': '#000', 'marker-symbol': 'embassy', 'marker-size': 'large'}
-                        });    
-            for (var i=0; i<data['geo_data'].length - 2; i++) {
-                markers.push({  geometry: {coordinates: data['geo_data'][i].slice(0, 2)},
-                                properties: {'marker-color': '#9cf', 'marker-size': 'small', 'image': "http://upload.wikimedia.org/wikipedia/commons/2/2a/Dot.png"}
-                            });                        
-            }                
-            marker_layer.features(markers);
-            // .factory(function(f) {
-            //     if (f.properties.image) {
-            //         var img = document.createElement('img');
-            //         img.className = 'marker-image';
-            //         img.setAttribute('src', f.properties.image);
-            //         return img;
-            //     }
-            // });
-            map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);                    
-            alert("Sequence request failed:\n" + errorThrown);
-            window.location.reload();
-        }
-    }); 
-}        
+// function loadWalk () {
+//     console.log("loadWalk " + walk_index);
+//     // $.ajax({
+//     //     type: 'GET',
+//     //     url: 'sequence.py',
+//     //     data: {'index': walk_index},
+//     //     dataType: 'json',
+//     //     success: function (data, textStatus, jqXHR) {
+//     //         walk_data = data;
+//     //         var start_location = data['geo_data'][0].slice(0, 2);
+//     //         var stop_location = data['geo_data'][data['geo_data'].length - 1].slice(0, 2);
+//     //         markers = [];
+//     //         markers.push({  geometry: {coordinates: start_location}, 
+//     //                         properties: {'marker-color': '#000', 'marker-symbol': 'circle', 'marker-size': 'large'}
+//     //                     });                    
+//     //         markers.push({  geometry: {coordinates: stop_location}, 
+//     //                         properties: {'marker-color': '#000', 'marker-symbol': 'embassy', 'marker-size': 'large'}
+//     //                     });    
+//     //         for (var i=0; i<data['geo_data'].length - 2; i++) {
+//     //             markers.push({  geometry: {coordinates: data['geo_data'][i].slice(0, 2)},
+//     //                             properties: {'marker-color': '#9cf', 'marker-size': 'small', 'image': "http://upload.wikimedia.org/wikipedia/commons/2/2a/Dot.png"}
+//     //                         });                        
+//     //         }                
+//     //         marker_layer.features(markers);
+//     //         // .factory(function(f) {
+//     //         //     if (f.properties.image) {
+//     //         //         var img = document.createElement('img');
+//     //         //         img.className = 'marker-image';
+//     //         //         img.setAttribute('src', f.properties.image);
+//     //         //         return img;
+//     //         //     }
+//     //         // });
+//     //         map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
+//     //     },
+//     //     error: function (jqXHR, textStatus, errorThrown) {
+//     //         console.log(jqXHR);                    
+//     //         alert("Sequence request failed:\n" + errorThrown);
+//     //         window.location.reload();
+//     //     }
+//     // }); 
+// }        
 
-function startWalk () {
-    console.log("startWalk");
-    $('#walk_select').hide();
-    $('#start_btn').hide();            
-    playSound('left', 0, 0.0, 0.0); // iOS needs this
-    playSound('right', 0, 0.0, 0.0); // iOS needs this
-    startAudio();
-}
+// function startWalk () {
+//     console.log("startWalk");
+//     $('#walk_select').hide();
+//     $('#start_btn').hide();            
+//     playSound('left', 0, 0.0, 0.0); // iOS needs this
+//     playSound('right', 0, 0.0, 0.0); // iOS needs this
+//     startAudio();
+// }
 
-function startAudio () {
-    console.log("startAudio");
-    $('#stop_btn').show();
-    sequence = walk_data['steps'];
-    audio_start_time = context.currentTime;
-    for (var i=0; i<4; i++) {
-        if (i % 2 == 0) {
-            playSound('left', audio_start_time + i, 1.0, 0.0);
-        } else {
-            playSound('right', audio_start_time + i, 1.0, 1.0);
-        }
-    }
-    audio_start_time += 4;  // now starting from after countoff
-    setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going (step starting is corrected for in process.py)
-    queueAudio();
-    sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
-}
+// function startAudio () {
+//     console.log("startAudio");
+//     $('#stop_btn').show();
+//     sequence = walk_data['steps'];
+//     audio_start_time = context.currentTime;
+//     for (var i=0; i<4; i++) {
+//         if (i % 2 == 0) {
+//             playSound('left', audio_start_time + i, 1.0, 0.0);
+//         } else {
+//             playSound('right', audio_start_time + i, 1.0, 1.0);
+//         }
+//     }
+//     audio_start_time += 4;  // now starting from after countoff
+//     setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going (step starting is corrected for in process.py)
+//     queueAudio();
+//     sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
+// }
 
-function queueAudio () {
-    console.log("queueAudio " + sequence.length);
-    // schedule notes from the queue that are happening in the next 10s or so
-    do {
-        if (sequence.length == 0) {
-            clearInterval(sequence_interval);
-            return;
-        }
-        var note = sequence.shift()
-        var time = audio_start_time + (note[0] / 1000.0);
-        var name = note[1];                        
-        playSound(name, time, 1.0, name == 'left' ? 0.0 : 1.0);
-    } while ((time - context.currentTime) < 10);    
-}
+// function queueAudio () {
+//     console.log("queueAudio " + sequence.length);
+//     // schedule notes from the queue that are happening in the next 10s or so
+//     do {
+//         if (sequence.length == 0) {
+//             clearInterval(sequence_interval);
+//             return;
+//         }
+//         var note = sequence.shift()
+//         var time = audio_start_time + (note[0] / 1000.0);
+//         var name = note[1];                        
+//         playSound(name, time, 1.0, name == 'left' ? 0.0 : 1.0);
+//     } while ((time - context.currentTime) < 10);    
+// }
 
-function startRecording () {
-    console.log("startRecording");
-    $('#readings').show();
-    getGeoLocation();
-    geo_interval = setInterval(getGeoLocation, 10000);            
-    start_time = timestamp();
-    window.ondevicemotion = function(event) {
-        var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
-        $('#display_x').html(d[1]);
-        $('#display_y').html(d[2]);
-        $('#display_z').html(d[3]);
-        accel_data.push(d);
-    }
-}
+// function startRecording () {
+//     console.log("startRecording");
+//     $('#readings').show();
+//     getGeoLocation();
+//     geo_interval = setInterval(getGeoLocation, 10000);            
+//     start_time = timestamp();
+//     window.ondevicemotion = function(event) {
+//         var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
+//         $('#display_x').html(d[1]);
+//         $('#display_y').html(d[2]);
+//         $('#display_z').html(d[3]);
+//         accel_data.push(d);
+//     }
+// }
 
-function getGeoLocation () {
-    console.log("getGeoLocation");
-    navigator.geolocation.getCurrentPosition(receiveGeoLocation);
-}
+// function getGeoLocation () {
+//     console.log("getGeoLocation");
+//     navigator.geolocation.getCurrentPosition(receiveGeoLocation);
+// }
 
-function receiveGeoLocation (location) {
-    geo_data.push([location.coords.longitude, location.coords.latitude, timestamp()]);
-    map.zoom(17).center({lon: location.coords.longitude, lat: location.coords.latitude});
-}                                
+// function receiveGeoLocation (location) {
+//     geo_data.push([location.coords.longitude, location.coords.latitude, timestamp()]);
+//     map.panTo([location.coords.latitude, location.coords.longitude]);    
+// }                                
 
-function stopWalk () {
-    console.log("stopWalk");
-    stop_time = timestamp();
-    window.ondevicemotion = function(event) { };            
-    master_gain_node.gain.value = 0.0;
-    getGeoLocation();
-    clearInterval(geo_interval);
-    sendLog();
-}
+// function stopWalk () {
+//     console.log("stopWalk");
+//     stop_time = timestamp();
+//     window.ondevicemotion = function(event) { };            
+//     master_gain_node.gain.value = 0.0;
+//     getGeoLocation();
+//     clearInterval(geo_interval);
+//     sendLog();
+// }
 
-function sendLog () {
-    console.log("sendLog");
-    $('#stop_btn').hide();
-    $('#readings').hide();
-    var duration = stop_time - start_time;
-    var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration};
-    walk_data = JSON.stringify(walk_data);            
-    $.ajax({
-        type: 'POST',
-        url: 'index.py', 
-        data: {'walk_data': walk_data}, 
-        success: function () {
-            alert("Success!");
-            window.location.reload();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("Log failed: " + errorThrown);
-            window.location.reload();
-        }
-    });
-}
+// function sendLog () {
+//     console.log("sendLog");
+//     $('#stop_btn').hide();
+//     $('#readings').hide();
+//     var duration = stop_time - start_time;
+//     var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration};
+//     walk_data = JSON.stringify(walk_data);            
+//     $.ajax({
+//         type: 'POST',
+//         url: 'index.py', 
+//         data: {'walk_data': walk_data}, 
+//         success: function () {
+//             alert("Success!");
+//             window.location.reload();
+//         },
+//         error: function (jqXHR, textStatus, errorThrown) {
+//             alert("Log failed: " + errorThrown);
+//             window.location.reload();
+//         }
+//     });
+// }
 
 $(document).ready(function() {                   
 
-    map = mapbox.map('map');
-    map.addLayer(mapbox.layer().id('brianhouse.map-124z30te'));
-    // map.ui.zoomer.add();
+    initMap();
 
-    marker_layer = mapbox.markers.layer()
-    mapbox.markers.interaction(marker_layer);
-    map.addLayer(marker_layer);            
-
-    $('#start_btn').hide();
-    $('#stop_btn').hide();
-    $('#readings').hide();     
-
-    navigator.geolocation.getCurrentPosition(function (location) { 
-        map.zoom(17).center({lon: location.coords.longitude, lat: location.coords.latitude});
-    }); // also for getting permission out of the way                   
+    // $('#start_btn').hide();
+    // $('#stop_btn').hide();
+    // $('#readings').hide();     
 
     try {
         context = new webkitAudioContext();
@@ -240,7 +270,5 @@ $(document).ready(function() {
 
     loadSound('left', "snd/left.wav");
     loadSound('right', "snd/right.wav");    
-
-    checkSelection();        
 
 });  
