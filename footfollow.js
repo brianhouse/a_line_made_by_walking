@@ -20,6 +20,7 @@ var master_gain_node = null;
 var audio_start_time = null;   
 
 // data collection
+var recording = false;
 var accel_data = [];
 var geo_data = [];
 var start_time = null;
@@ -34,6 +35,7 @@ function initMap () {
     map = new L.map('map', {
         layers: new L.TileLayer("http://a.tiles.mapbox.com/v3/" + mapbox_username + ".map-" + mapbox_map_id + "/{z}/{x}/{y}.png"),
         zoomControl: true,
+        center: new L.LatLng(41.8205209, -72.400848), // need this before we can panto elsewhere
         attributionControl: false,
         doubleClickZoom: false,
         scrollWheelZoom: false,
@@ -44,25 +46,33 @@ function initMap () {
         zoom: 17,
         minZoom: 10,                    
         maxZoom: 17
-    });     
-    map.locate({setView: true, watch: true, enableHighAccuracy: true}); // detect current location
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
+    });
+    getGeoLocation();
+    geo_interval = setInterval(function () {
+        getGeoLocation();        
+    }, 10000);                
 }
 
-/* when the user's location is found */
-function onLocationFound (e) {
+function getGeoLocation () {
+    console.log("getGeoLocation");
+    // doing this explicitly instead of with leaflet because it appears to be more accurate
+    navigator.geolocation.getCurrentPosition(receiveGeoLocation)
+}
+
+function receiveGeoLocation (location) {
+    console.log("receiveGeoLocation");
+    if (recording) {
+        geo_data.push([location.coords.longitude, location.coords.latitude, timestamp()]);
+    }
+    var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
+    console.log("--> " + latlng);
+    map.panTo(latlng);
     if (current_location_marker == null) {
-        current_location_marker = L.circleMarker(e.latlng, {radius: 10, color: "#009dff", stroke: false, fillOpacity: 1.0, clickable: false}).addTo(map);
+        current_location_marker = L.circleMarker(latlng, {radius: 10, color: "#009dff", stroke: false, fillOpacity: 1.0, clickable: false}).addTo(map);
     } else {
-        current_location_marker.setLatLng(e.latlng);
-    } 
-}
-
-/* if something goes wrong with finding the user's location */
-function onLocationError (e) {
-    alert(e.message);
-}
+        current_location_marker.setLatLng(latlng);
+    }     
+} 
 
 function loadSound (name, url) {
     console.log("loadSound " + name);
@@ -258,7 +268,7 @@ $(document).ready(function() {
 
     // $('#start_btn').hide();
     // $('#stop_btn').hide();
-    // $('#readings').hide();     
+    // $('#readings').hide();   
 
     try {
         context = new webkitAudioContext();
