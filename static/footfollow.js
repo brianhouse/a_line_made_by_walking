@@ -34,7 +34,7 @@ function initMap () {
     map = new L.map('map', {
         layers: new L.TileLayer("http://a.tiles.mapbox.com/v3/" + mapbox_username + ".map-" + mapbox_map_id + "/{z}/{x}/{y}.png"),
         zoomControl: true,
-        center: new L.LatLng(41.8205209, -72.400848), // need this before we can panTo elsewhere
+        center: new L.LatLng(41.8205, -71.40083), // need this before we can panTo elsewhere
         attributionControl: false,
         doubleClickZoom: false,
         scrollWheelZoom: false,
@@ -128,8 +128,7 @@ function loadWalk () {
     console.log("loadWalk " + walk_id);
     $.ajax({
         type: 'GET',
-        url: 'sequence.py',
-        data: {'index': walk_id},
+        url: '/sequence/' + walk_id,
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
             walk_data = data;
@@ -158,9 +157,8 @@ function loadWalk () {
             // });
             map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
         },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);                    
-            alert("Sequence request failed:\n" + errorThrown);
+        error: function (result) {
+            alert(result.responseText.substr(5));
             window.location.reload();
         }
     }); 
@@ -173,15 +171,12 @@ function startWalk () {
     $('#stop_btn').show();    
     playSound('left', 0, 0.0, 0.0); // iOS needs this
     playSound('right', 0, 0.0, 0.0); // iOS needs this
-    if (walk_id != null && walk_id.length) {
-        startAudio();
-    }
     setTimeout(startRecording, 4000 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
+    startAudio();
 }
 
 function startAudio () {
     console.log("startAudio");
-    sequence = walk_data['steps'];
     audio_start_time = context.currentTime;
     for (var i=0; i<4; i++) {
         if (i % 2 == 0) {
@@ -190,9 +185,12 @@ function startAudio () {
             playSound('right', audio_start_time + i, 1.0, 1.0);
         }
     }
-    audio_start_time += 4;  // now starting from after countoff
-    queueAudio();
-    sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
+    if (walk_id != null && walk_id.length) {
+        audio_start_time += 4;  // now starting from after countoff
+        sequence = walk_data['steps'];    
+        queueAudio();
+        sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
+    }
 }
 
 function queueAudio () {
@@ -248,14 +246,14 @@ function sendWalk () {
     walk_data = JSON.stringify(walk_data);            
     $.ajax({
         type: 'POST',
-        url: 'index.py', 
+        url: '/', 
         data: {'walk_data': walk_data}, 
-        success: function () {
+        success: function (result) {
             alert("Success!");
             window.location.reload();
         },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("Log failed: " + errorThrown);
+        error: function (result) {
+            alert(result.responseText.substr(5));
             window.location.reload();
         }
     });
@@ -277,8 +275,8 @@ $(document).ready(function() {
         alert("Web Audio API is not supported in this browser");
     }            
 
-    loadSound('left', "snd/left.wav");
-    loadSound('right', "snd/right.wav");    
+    loadSound('left', "/static/snd/left.wav");
+    loadSound('right', "/static/snd/right.wav");    
 
     checkSelection();
 

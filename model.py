@@ -6,10 +6,12 @@ from housepy import config, log
 connection = sqlite3.connect("walk_data.db")
 connection.row_factory = sqlite3.Row
 db = connection.cursor()
+# what's the danger of the connection closing accidentally? I dont think much
+# and tornado is single threaded, so commits should be fine
 
 def init():
     try:
-        db.execute("CREATE TABLE walks (start_time INT, duration INT, user TEXT)")
+        db.execute("CREATE TABLE walks (start_time INT, duration INT)")
         db.execute("CREATE TABLE geo_data (walk_id INT, t INT, lat REAL, lng REAL)")
         db.execute("CREATE TABLE accel_data (walk_id INT, t INT, x REAL, y REAL, z REAL)")
         db.execute("CREATE TABLE sequence (walk_id INT, t INT, foot TEXT)")
@@ -20,18 +22,26 @@ def init():
 init()
 
 def insert_walk(walk):
-    db.execute("INSERT INTO walks (start_time, duration, user) VALUES (?, ?, ?)", (walk['start_time'], walk['duration'], walk['user']))
-    walk_id = db.lastrowid    
-    for gd in walk['geo_data']:
-        db.execute("INSERT INTO geo_data (walk_id, t, lat, lng) VALUES (?, ?, ?, ?)", (walk_id, gd[0], gd[1], gd[2]))
-    for ad in walk['accel_data']:
-        db.execute("INSERT INTO accel_data (walk_id, t, x, y, z) VALUES (?, ?, ?, ?, ?)", (walk_id, ad[0], ad[1], ad[2], ad[3]))
+    try:
+        db.execute("INSERT INTO walks (start_time, duration) VALUES (?, ?)", (walk['start_time'], walk['duration']))
+        walk_id = db.lastrowid    
+        for gd in walk['geo_data']:
+            db.execute("INSERT INTO geo_data (walk_id, t, lat, lng) VALUES (?, ?, ?, ?)", (walk_id, gd[0], gd[1], gd[2]))
+        for ad in walk['accel_data']:
+            db.execute("INSERT INTO accel_data (walk_id, t, x, y, z) VALUES (?, ?, ?, ?, ?)", (walk_id, ad[0], ad[1], ad[2], ad[3]))
+    except Exception as e:
+        log.error(log.exc(e))
+        return None
     connection.commit()
     return walk_id
 
 def insert_sequence(walk_id, sequence):
-    for step in sequence:
-        db.execute("INSERT INTO sequence (walk_id, t, foot) VALUES (?, ?, ?)", (walk_id, sequence[0], sequence[1]))
+    try:
+        for step in sequence:
+            db.execute("INSERT INTO sequence (walk_id, t, foot) VALUES (?, ?, ?)", (walk_id, sequence[0], sequence[1]))
+    except Exception as e:
+        log.error(log.exc(e))
+        return None
     connection.commit()
 
 def fetch_walks():

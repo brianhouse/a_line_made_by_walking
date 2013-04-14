@@ -5,9 +5,11 @@ import numpy as np
 import signal_processing as sp
 from housepy import log, config
 
-def process_walk(accel_data, walk_id):
+def process_walk(data, walk_id):
 
     # let's sample every millisecond, so the time of the last reading is how many samples we need
+    data = np.array(data)
+    log.debug(data)
     ts = data[:,0]
     total_samples = ts[-1]
     log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
@@ -115,20 +117,6 @@ def plot(index, xs, ys, zs, ds, peaks, valleys, total_samples):
     ctx.image.save("charts/%s_%s.png" % (index, int(time.time())), "PNG")
     if __name__ == "__main__":
         ctx.show()
-
-
-if __name__ == "__main__":
-    index = sys.argv[1]
-    log.info(index)
-    db = CrashDB("walk_data.json")
-    try:
-        data = db[index]
-    except CrashDBError as e:
-        log.error(e)        
-        db.close()
-    else:
-        db.close()    
-        process_walk(data)
 
 
 # ## other ideas

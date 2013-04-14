@@ -22,3 +22,10 @@ what if there are overlapping walks?
 /
 
 set max walk time (5 min)
+
+
+should have a 'ding' for starting
+
+/
+
+shit. how is this going to run? need to convert to tornado.
