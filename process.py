@@ -17,8 +17,8 @@ def process_walk(accel_data, walk_id):
     ys = sp.resample(ts, data[:,2], total_samples)
     zs = sp.resample(ts, data[:,3], total_samples)
 
-    # skip 3 seconds for putting the phone in the pocket
-    skip = 3000
+    # skip 0.5s for intro
+    skip = 500
     xs = xs[skip:]
     ys = ys[skip:]
     zs = zs[skip:]

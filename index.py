@@ -24,7 +24,4 @@ if page.method == 'POST':
     log.info("--> done")
     page.text("OK")
 else:
-    options = {}
-    for walk in model.fetch_walks():
-        options[walk['start_time']] = datetime.datetime.fromtimestamp(int(float(walk['start_time']) / 1000.0))
-    page.render("home.html", {'options': options})
+    page.render("home.html", {'walks': model.fetch_walks()})

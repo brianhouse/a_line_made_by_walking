@@ -2,15 +2,14 @@
 var mapbox_username = "brianhouse";
 var mapbox_map_id = "124z30te";
 
-// sequence data
-var walk_index = null;
-var num_walks = 0;
+// data for loaded walk
+var walk_id = null;
 var walk_data = null;
 var sequence = null;
 
 // map
 var map = null;
-var current_location_marker;
+var current_location_marker = null;
 var marker_layer = null;        
 
 // audio
@@ -35,7 +34,7 @@ function initMap () {
     map = new L.map('map', {
         layers: new L.TileLayer("http://a.tiles.mapbox.com/v3/" + mapbox_username + ".map-" + mapbox_map_id + "/{z}/{x}/{y}.png"),
         zoomControl: true,
-        center: new L.LatLng(41.8205209, -72.400848), // need this before we can panto elsewhere
+        center: new L.LatLng(41.8205209, -72.400848), // need this before we can panTo elsewhere
         attributionControl: false,
         doubleClickZoom: false,
         scrollWheelZoom: false,
@@ -44,7 +43,7 @@ function initMap () {
         dragging: false,
         keyboard: false,
         zoom: 17,
-        minZoom: 10,                    
+        minZoom: 13,                    
         maxZoom: 17
     });
     getGeoLocation();
@@ -95,7 +94,7 @@ function playSound (name, time, volume, pan) {
     source.buffer = buffer;                          // tell the source which sound to play
     var pan_node = context.createPanner();           // create the panning node
     source.connect(pan_node);                        // connect the pan to the source        
-    pan_node.panningModel = webkitAudioPannerNode.equalpower;    
+    pan_node.panningModel = webkitAudioPannerNode.EQUALPOWER;    
     pan_node.setPosition((pan * 20.0) - 10.0, 0, 0); // set panning value (0-1)
     var gain_node = context.createGainNode();        // create a gain node
     pan_node.connect(gain_node);                     // connect the gain to the pan
@@ -111,70 +110,77 @@ function timestamp () {
 
 function checkSelection () {
     console.log("checkSelection");
-    walk_index = $('#walk_select option:selected').val();
+    walk_id = $('#walk_select option:selected').val();
     num_walks = $('#walk_select option').length;
-    if (num_walks <= 1 || walk_index.length) {
+    if (num_walks <= 1 || walk_id.length) {
         $('#start_btn').show();
-        loadWalk();
+        if (walk_id.length) {
+            loadWalk();
+        } else {
+            $('#walk_select').hide();
+        }
     } else {
         $('#start_btn').hide();
     }
 }
 
 function loadWalk () {
-    console.log("loadWalk " + walk_index);
-    // $.ajax({
-    //     type: 'GET',
-    //     url: 'sequence.py',
-    //     data: {'index': walk_index},
-    //     dataType: 'json',
-    //     success: function (data, textStatus, jqXHR) {
-    //         walk_data = data;
-    //         var start_location = data['geo_data'][0].slice(0, 2);
-    //         var stop_location = data['geo_data'][data['geo_data'].length - 1].slice(0, 2);
-    //         markers = [];
-    //         markers.push({  geometry: {coordinates: start_location}, 
-    //                         properties: {'marker-color': '#000', 'marker-symbol': 'circle', 'marker-size': 'large'}
-    //                     });                    
-    //         markers.push({  geometry: {coordinates: stop_location}, 
-    //                         properties: {'marker-color': '#000', 'marker-symbol': 'embassy', 'marker-size': 'large'}
-    //                     });    
-    //         for (var i=0; i<data['geo_data'].length - 2; i++) {
-    //             markers.push({  geometry: {coordinates: data['geo_data'][i].slice(0, 2)},
-    //                             properties: {'marker-color': '#9cf', 'marker-size': 'small', 'image': "http://upload.wikimedia.org/wikipedia/commons/2/2a/Dot.png"}
-    //                         });                        
-    //         }                
-    //         marker_layer.features(markers);
-    //         // .factory(function(f) {
-    //         //     if (f.properties.image) {
-    //         //         var img = document.createElement('img');
-    //         //         img.className = 'marker-image';
-    //         //         img.setAttribute('src', f.properties.image);
-    //         //         return img;
-    //         //     }
-    //         // });
-    //         map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
-    //     },
-    //     error: function (jqXHR, textStatus, errorThrown) {
-    //         console.log(jqXHR);                    
-    //         alert("Sequence request failed:\n" + errorThrown);
-    //         window.location.reload();
-    //     }
-    // }); 
+    console.log("loadWalk " + walk_id);
+    $.ajax({
+        type: 'GET',
+        url: 'sequence.py',
+        data: {'index': walk_id},
+        dataType: 'json',
+        success: function (data, textStatus, jqXHR) {
+            walk_data = data;
+            var start_location = data['geo_data'][0].slice(0, 2);
+            var stop_location = data['geo_data'][data['geo_data'].length - 1].slice(0, 2);
+            markers = [];
+            markers.push({  geometry: {coordinates: start_location}, 
+                            properties: {'marker-color': '#000', 'marker-symbol': 'circle', 'marker-size': 'large'}
+                        });                    
+            markers.push({  geometry: {coordinates: stop_location}, 
+                            properties: {'marker-color': '#000', 'marker-symbol': 'embassy', 'marker-size': 'large'}
+                        });    
+            for (var i=0; i<data['geo_data'].length - 2; i++) {
+                markers.push({  geometry: {coordinates: data['geo_data'][i].slice(0, 2)},
+                                properties: {'marker-color': '#9cf', 'marker-size': 'small', 'image': "http://upload.wikimedia.org/wikipedia/commons/2/2a/Dot.png"}
+                            });                        
+            }                
+            marker_layer.features(markers);
+            // .factory(function(f) {
+            //     if (f.properties.image) {
+            //         var img = document.createElement('img');
+            //         img.className = 'marker-image';
+            //         img.setAttribute('src', f.properties.image);
+            //         return img;
+            //     }
+            // });
+            map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);                    
+            alert("Sequence request failed:\n" + errorThrown);
+            window.location.reload();
+        }
+    }); 
 }        
 
 function startWalk () {
     console.log("startWalk");
     $('#walk_select').hide();
     $('#start_btn').hide();            
+    $('#stop_btn').show();    
     playSound('left', 0, 0.0, 0.0); // iOS needs this
     playSound('right', 0, 0.0, 0.0); // iOS needs this
-    startAudio();
+    if (walk_id != null && walk_id.length) {
+        startAudio();
+    }
+    setTimeout(startRecording, 4000 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
 }
 
 function startAudio () {
     console.log("startAudio");
-    $('#stop_btn').show();
     sequence = walk_data['steps'];
     audio_start_time = context.currentTime;
     for (var i=0; i<4; i++) {
@@ -185,7 +191,6 @@ function startAudio () {
         }
     }
     audio_start_time += 4;  // now starting from after countoff
-    setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going (step starting is corrected for in process.py)
     queueAudio();
     sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
 }
@@ -207,10 +212,10 @@ function queueAudio () {
 
 function startRecording () {
     console.log("startRecording");
-    $('#readings').show();
-    getGeoLocation();
-    geo_interval = setInterval(getGeoLocation, 10000);            
+    $('#readings').show();    
     start_time = timestamp();
+    recording = true;
+    getGeoLocation();    
     window.ondevicemotion = function(event) {
         var d = [timestamp() - start_time, event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
         $('#display_x').html(d[1]);
@@ -226,12 +231,11 @@ function stopWalk () {
     window.ondevicemotion = function(event) { };            
     master_gain_node.gain.value = 0.0;
     getGeoLocation();
-    clearInterval(geo_interval);
-    sendLog();
+    sendWalk();
 }
 
-function sendLog () {
-    console.log("sendLog");
+function sendWalk () {
+    console.log("sendWalk");
     $('#stop_btn').hide();
     $('#readings').hide();
     var duration = stop_time - start_time;
@@ -256,9 +260,9 @@ $(document).ready(function() {
 
     initMap();
 
-    // $('#start_btn').hide();
-    // $('#stop_btn').hide();
-    // $('#readings').hide();   
+    $('#start_btn').hide();
+    $('#stop_btn').hide();
+    $('#readings').hide();   
 
     try {
         context = new webkitAudioContext();
@@ -270,5 +274,7 @@ $(document).ready(function() {
 
     loadSound('left', "snd/left.wav");
     loadSound('right', "snd/right.wav");    
+
+    checkSelection();
 
 });  

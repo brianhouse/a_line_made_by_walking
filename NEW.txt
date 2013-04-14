@@ -18,3 +18,7 @@ circle icons on map, with lines extending out
 click on the circle, loads up the walk
 
 what if there are overlapping walks?
+
+/
+
+set max walk time (5 min)

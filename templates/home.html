@@ -53,10 +53,10 @@
 </head>
 <body>
     <div id="map"></div>
-<!--     <select id="walk_select" onChange="checkSelection()" class="select">
+    <select id="walk_select" onChange="checkSelection()" class="select">
         <option value=""></option>
-    {% for timestamp, date in options | dictsort | reverse %}
-        <option value="{{ timestamp}}">{{ date }}</a>
+    {% for walk in walks %}
+        <option value="{{ walk['id'] }}">{{ walk['id'] }}</a>
     {% endfor %}
     </select>
     <div id="readings">
@@ -66,6 +66,6 @@
     </div>
     <input id="start_btn" class="btn" type="button" onClick="startWalk()" value="START" />
     <input id="stop_btn" class="btn" type="button" onClick="stopWalk()" value="STOP" />
- --></body>
+</body>
 </html>
 
