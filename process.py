@@ -2,8 +2,8 @@
 
 import sys, json, time, model
 import numpy as np
+import signal_processing as sp
 from housepy import log, config, science
-from housepy import signal_processing as sp
 
 def process_walk(accel_data, walk_id):
 
