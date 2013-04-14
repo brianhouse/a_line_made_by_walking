@@ -11,10 +11,13 @@ db = connection.cursor()
 
 def init():
     try:
-        db.execute("CREATE TABLE walks (start_time INT, duration INT)")
+        db.execute("CREATE TABLE walks (id INT PRIMARY KEY, start_time INT, duration INT)")
         db.execute("CREATE TABLE geo_data (walk_id INT, t INT, lat REAL, lng REAL)")
+        db.execute("CREATE INDEX geo_data_walk_id ON geo_data(walk_id)")
         db.execute("CREATE TABLE accel_data (walk_id INT, t INT, x REAL, y REAL, z REAL)")
+        db.execute("CREATE INDEX accel_data_walk_id ON accel_data(walk_id)")
         db.execute("CREATE TABLE sequence (walk_id INT, t INT, foot TEXT)")
+        db.execute("CREATE INDEX sequence_walk_id ON sequence(walk_id)")
     except Exception as e:
         if not "already exists" in e.message:
             raise e
@@ -46,8 +49,11 @@ def insert_sequence(walk_id, sequence):
 
 def fetch_walks():
     db.execute("SELECT * FROM walks")
-    rows = db.fetchall()
-    return rows
+    walks = dict(db.fetchall())
+    for walk in walks:
+        geo_data = db.execute("SELECT * FROM geo_data WHERE walk_id=?", walk['id'])
+        walk['geo_data'] = walk
+    return walk
 
 def fetch_sequence(walk_id):
     db.execute("SELECT * FROM sequence WHERE walk_id=?", walk_id)

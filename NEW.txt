@@ -1,31 +1,24 @@
+ok, so each walk is:
+5*60 / 10 = 30 gps points
 
-browser sanity check -- needs to be ios safari
+that's fine. we can load everything and plot it.
 
-/
 
-big question is generalizing the gait detection.
+marker zooming
 
-/
-
-specialized issues: timeouts cease to work when phone sleeps
-
-if the phone is clicked off, does that kill the timeout?
 
 /
 
 circle icons on map, with lines extending out
-
 click on the circle, loads up the walk
-
 what if there are overlapping walks?
 
-/
 
-set max walk time (5 min)
+//
 
-
-should have a 'ding' for starting
-
-/
-
-shit. how is this going to run? need to convert to tornado.
+- browser sanity check -- needs to be ios safari
+- big question is generalizing the gait detection.
+- specialized issues: timeouts cease to work when phone sleeps
+    if the phone is clicked off, does that kill the timeout?
+- set max walk time (5 min)
+- should have a 'ding' for starting
