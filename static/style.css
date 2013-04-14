@@ -47,6 +47,19 @@ body, html {
         text-decoration: none;
         display: block;
     }
+    .instructions a.stop {
+        font-size: 40px;
+        text-decoration: none;
+        display: block;
+        background-color: #666;
+        padding: 5px;
+        width: 100px;
+        margin: auto;
+    }
+        .instructions a.stop:hover {
+            background-color: white;
+            color: #666;
+        }
 
 a#start_btn {
     position: absolute;

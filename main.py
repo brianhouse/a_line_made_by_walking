@@ -16,8 +16,12 @@ class Home(tornado_server.Handler):
             return self.render("map.html", {'walks': model.fetch_walks()})
         elif page == "choose":
             return self.render("choose.html")
+        elif page == "ready":
+            return self.render("ready.html", walk_id=walk_id)
         elif page == "walk":
-            return self.render("walk.html")
+            return self.render("walk.html") 
+        elif page == "thanks":
+            return self.render("thanks.html")           
         else:
             return self.render("home.html")
 

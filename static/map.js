@@ -80,7 +80,7 @@ function loadWalks () {
 }
 
 function startWalk () {
-    window.location = "/walk/" + walk_id;    
+    window.location = "/ready/" + walk_id;    
 }
 
 $(document).ready(function() {                   
