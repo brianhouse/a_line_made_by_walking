@@ -4,7 +4,7 @@ ok, so each walk is:
 that's fine. we can load everything and plot it.
 
 
-marker zooming
+
 
 
 /
@@ -13,9 +13,12 @@ circle icons on map, with lines extending out
 click on the circle, loads up the walk
 what if there are overlapping walks?
 
+can have a manual click
+
 
 //
 
+- marker zooming
 - browser sanity check -- needs to be ios safari
 - big question is generalizing the gait detection.
 - specialized issues: timeouts cease to work when phone sleeps

@@ -53,7 +53,7 @@ def fetch_walks():
     for walk in walks:
         geo_data = db.execute("SELECT * FROM geo_data WHERE walk_id=?", walk['id'])
         walk['geo_data'] = walk
-    return walk
+    return walks
 
 def fetch_sequence(walk_id):
     db.execute("SELECT * FROM sequence WHERE walk_id=?", walk_id)

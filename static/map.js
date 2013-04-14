@@ -2,10 +2,11 @@ var mapbox_username = "brianhouse";
 var mapbox_map_id = "yse7s0w5";
 var map = null;
 var current_location_marker = null;
-var geo_interval = null;
 var walk_data = null;
 var walk_markers = [];
 var walk_paths = [];
+var walk_ids = [];
+var walk_id = null;
 var trigger_radius = 30; // ft
 
 function initMap () {
@@ -25,7 +26,7 @@ function initMap () {
         maxZoom: 17
     });
     getGeoLocation();
-    geo_interval = setInterval(function () {
+    setInterval(function () {
         getGeoLocation();        
     }, 10000);                
 }
@@ -52,6 +53,8 @@ function receiveGeoLocation (location) {
             console.log("hit");
             walk_marker.setStyle({fillColor: "#fff"});
             walk_paths[index].setStyle({color: "#fff"});
+            walk_id = walk_ids[index];
+            // conflicts here are a problem
         } else {
             walk_marker.setStyle({fillColor: walk_marker.color});
             walk_paths[index].setStyle({color: walk_marker.color});            
@@ -72,7 +75,12 @@ function loadWalks () {
         var walk_path = new L.Polyline(points, {color: color, weight: 5, opacity: 0.75, smoothFactor: 2}).addTo(map);
         walk_markers.push(walk_marker);
         walk_paths.push(walk_path);
+        walk_ids.push(walk['id']);
     });
+}
+
+function startWalk () {
+    window.location = "/walk/" + walk_id;    
 }
 
 $(document).ready(function() {                   

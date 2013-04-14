@@ -3,10 +3,11 @@ body, html {
     padding: 0px;
     width: 100%;
     height: 100%;            
-    font: 18px monospace;
+    font: 18px 'Roboto Condensed', sans-serif;
     color: black;            
     background-color: black;
 }
+
 #map {
     position: absolute;
     width: 100%;
@@ -17,12 +18,7 @@ body, html {
     z-index: 0;
     overflow: hidden;
 }
-.btn {
-    position: absolute;
-    font: 18px monospace;
-    left: 10px;
-    top: 70px;
-}
+
 .instructions {
     font: 18px 'Roboto Condensed', sans-serif;
     color: white;
@@ -39,21 +35,35 @@ body, html {
         font-weight: normal;
         font-size: 14px;
     }
+    .instructions h4 {
+        font-weight: normal;
+        font-size: 30px;
+    }
     .instructions a {
         color: white;
     }
     .instructions a.arrow {
-        font-size: 32px;
+        font-size: 40px;
         text-decoration: none;
         display: block;
     }
-#walk_select {
+
+a#start_btn {
     position: absolute;
-    font: 18px monospace;
+    top: 80px; 
     left: 10px;
-    top: 20px;
-    z-index: 100;
+    display: block;
+    background: #eee;
+    padding: 5px;
+    border: 2px solid #666;
+    text-decoration: none;
+    color: black;
 }
+
+    a#start_btn:hover {
+        background-color: #666;
+    }
+
 #readings {
     position: absolute;
     left: 0px;

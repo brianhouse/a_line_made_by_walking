@@ -10,16 +10,18 @@ pc.secure_pid(os.path.join(os.path.dirname(__file__), "run"))
 
 class Home(tornado_server.Handler):
 
-    def get(self, page=None):
+    def get(self, page=None, walk_id=None):
         log.info("Home.get %s" % page)
         if page == "map":
             return self.render("map.html", {'walks': model.fetch_walks()})
         elif page == "choose":
             return self.render("choose.html")
+        elif page == "walk":
+            return self.render("walk.html")
         else:
             return self.render("home.html")
 
-    def post(self, nop=None):
+    def post(self, nop=None, nop2=None):
         log.info("Home.post")
         try:
             data = json.loads(self.get_argument('walk_data'))
@@ -49,7 +51,7 @@ class Sequence(tornado_server.Handler):
 def main():
     handlers = [
         (r"/sequence/?([^/]*)", Sequence),    
-        (r"/?([^/]*)", Home),
+        (r"/?([^/]*)/?([^/]*)", Home),
     ]
     tornado_server.start(handlers)      
                      
