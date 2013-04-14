@@ -11,8 +11,13 @@ pc.secure_pid(os.path.join(os.path.dirname(__file__), "run"))
 class Home(tornado_server.Handler):
 
     def get(self, page=None):
-        log.info("Home.get")
-        return self.render("home.html", {'walks': model.fetch_walks()})
+        log.info("Home.get %s" % page)
+        if page == "map":
+            return self.render("map.html", {'walks': model.fetch_walks()})
+        elif page == "choose":
+            return self.render("choose.html")
+        else:
+            return self.render("home.html")
 
     def post(self, nop=None):
         log.info("Home.post")

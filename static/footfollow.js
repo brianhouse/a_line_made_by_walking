@@ -1,6 +1,6 @@
 // mapbox
 var mapbox_username = "brianhouse";
-var mapbox_map_id = "124z30te";
+var mapbox_map_id = "yse7s0w5";
 
 // data for loaded walk
 var walk_id = null;
@@ -67,7 +67,7 @@ function receiveGeoLocation (location) {
     console.log("--> " + latlng);
     map.panTo(latlng);
     if (current_location_marker == null) {
-        current_location_marker = L.circleMarker(latlng, {radius: 10, color: "#009dff", stroke: false, fillOpacity: 1.0, clickable: false}).addTo(map);
+        current_location_marker = L.circleMarker(latlng, {radius: 10, color: "#fff", stroke: false, fillOpacity: 1.0, clickable: false}).addTo(map);
     } else {
         current_location_marker.setLatLng(latlng);
     }     

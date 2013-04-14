@@ -1,72 +1,19 @@
-<html>
-<head>
-    <title>Footfollow</title>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">        
-    <meta name="apple-touch-fullscreen" content="yes" />    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />        
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
-    <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/footfollow.js"></script>    
-    <style type="text/css">
-        body, html {
-            margin: 0px;
-            padding: 0px;
-            width: 100%;
-            height: 100%;            
-            font: 18px monospace;
-            color: black;            
-            background-color: white;
-        }
-        #map {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            left: 0px;
-            top: 0px;
-            border: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .btn {
-            position: absolute;
-            font: 18px monospace;
-            left: 10px;
-            top: 70px;
-        }
-        #walk_select {
-            position: absolute;
-            font: 18px monospace;
-            left: 10px;
-            top: 20px;
-            z-index: 100;
-        }
-        #readings {
-            position: absolute;
-            left: 0px;
-            top: 261px;
-            width: 300px;
-            height: 75px;
-            padding: 10px;
-            color: black;
-        }
-    </style>
-</head>
-<body>
-    <div id="map"></div>
-    <select id="walk_select" onChange="checkSelection()" class="select">
-        <option value=""></option>
-    {% for walk in walks %}
-        <option value="{{ walk['id'] }}">{{ walk['id'] }}</a>
-    {% endfor %}
-    </select>
-    <div id="readings">
-        X: <span id="display_x"></span><br />
-        Y: <span id="display_y"></span><br />
-        Z: <span id="display_z"></span><br />
-    </div>
-    <input id="start_btn" class="btn" type="button" onClick="startWalk()" value="START" />
-    <input id="stop_btn" class="btn" type="button" onClick="stopWalk()" value="STOP" />
-</body>
-</html>
+{% extends "page.html" %}
 
+{% block body %}
+
+    <div class="instructions">
+
+        <h2>Footfollow.</h2>
+        <h3>(an experiment by <a href="http://brianhouse.net" target="_blank">brian house</a>)</h3>
+        <br />
+        <p>
+            <b>Step 1</b>: get out your headphones
+            <a class="arrow" href="/choose">&rarr;</a>
+        </p>
+
+<!-- Footfollow is an experiment in patterns and contraints, data and control. It’s also a webapp for iOS and Android. Here’s how it works: 1) visit http://footfollow.org on your mobile device and get out your headphones, 2) choose a walk, 3) put your phone in your pocket and listen, 4) what you hear is a click track that matches the footsteps made by the person before you — can you match them?, 5) your footsteps have now also been recorded, and someone else will listen and walk to them, 6) and so on and so forth.
+ -->
+    </div>
+
+{% endblock body %}
