@@ -232,6 +232,8 @@ function stopWalk () {
     master_gain_node.gain.value = 0.0;
     getGeoLocation();
     sendWalk();
+    start_time = null;
+    stop_time = null;
 }
 
 function sendWalk () {
@@ -239,6 +241,9 @@ function sendWalk () {
     $('#stop_btn').hide();
     $('#readings').hide();
     var duration = stop_time - start_time;
+    if (start_time == null) {
+        duration == null;
+    }
     var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration};
     walk_data = JSON.stringify(walk_data);            
     $.ajax({
