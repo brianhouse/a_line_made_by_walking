@@ -78,11 +78,10 @@ a#start_btn {
     }
 
 #readings {
-    position: absolute;
-    left: 0px;
     top: 261px;
-    width: 300px;
-    height: 75px;
-    padding: 10px;
-    color: black;
+    width: 200px;
+    color: white;
+    font-family: monospace;
+    font-size: 12px;
+    margin: auto;
 }

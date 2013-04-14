@@ -1,5 +1,15 @@
 {% extends "page.html" %}
 
+{% block head %}
+
+    <script type="text/javascript" src="/static/playback.js"></script>    
+    <script type="text/javascript">
+        sequence = {{ sequence }};
+        // sequence = [[0, 'left'], [1, 'right'], [2, 'left'], [4, 'right']];
+    </script>
+
+{% endblock head %}
+
 {% block body %}
 
     <div class="instructions">
@@ -8,7 +18,12 @@
         </h4>
         <h3>(phone in pocket)</h3>
         <h4></h4>
-        <a class="stop" href="/thanks">STOP</a>
+        <a class="stop" href="javascript:stopWalk();">STOP</a>
+    </div>
+    <div id="readings">
+        <span id="display_x"></span><br />
+        <span id="display_y"></span><br />
+        <span id="display_z"></span><br />
     </div>
 
 {% endblock body %}
