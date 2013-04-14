@@ -62,7 +62,7 @@ function getGeoLocation () {
 function receiveGeoLocation (location) {
     console.log("receiveGeoLocation");
     if (recording) {
-        geo_data.push([location.coords.longitude, location.coords.latitude, timestamp()]);
+        geo_data.push([timestamp() - start_time, location.coords.longitude, location.coords.latitude]);
     }
     var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
     console.log("--> " + latlng);
@@ -109,158 +109,148 @@ function timestamp () {
     return new Date().getTime()
 }
 
-// function checkSelection () {
-//     console.log("checkSelection");
-//     walk_index = $('#walk_select option:selected').val();
-//     num_walks = $('#walk_select option').length;
-//     if (num_walks <= 1 || walk_index.length) {
-//         $('#start_btn').show();
-//         loadWalk();
-//     } else {
-//         $('#start_btn').hide();
-//     }
-// }
+function checkSelection () {
+    console.log("checkSelection");
+    walk_index = $('#walk_select option:selected').val();
+    num_walks = $('#walk_select option').length;
+    if (num_walks <= 1 || walk_index.length) {
+        $('#start_btn').show();
+        loadWalk();
+    } else {
+        $('#start_btn').hide();
+    }
+}
 
-// function loadWalk () {
-//     console.log("loadWalk " + walk_index);
-//     // $.ajax({
-//     //     type: 'GET',
-//     //     url: 'sequence.py',
-//     //     data: {'index': walk_index},
-//     //     dataType: 'json',
-//     //     success: function (data, textStatus, jqXHR) {
-//     //         walk_data = data;
-//     //         var start_location = data['geo_data'][0].slice(0, 2);
-//     //         var stop_location = data['geo_data'][data['geo_data'].length - 1].slice(0, 2);
-//     //         markers = [];
-//     //         markers.push({  geometry: {coordinates: start_location}, 
-//     //                         properties: {'marker-color': '#000', 'marker-symbol': 'circle', 'marker-size': 'large'}
-//     //                     });                    
-//     //         markers.push({  geometry: {coordinates: stop_location}, 
-//     //                         properties: {'marker-color': '#000', 'marker-symbol': 'embassy', 'marker-size': 'large'}
-//     //                     });    
-//     //         for (var i=0; i<data['geo_data'].length - 2; i++) {
-//     //             markers.push({  geometry: {coordinates: data['geo_data'][i].slice(0, 2)},
-//     //                             properties: {'marker-color': '#9cf', 'marker-size': 'small', 'image': "http://upload.wikimedia.org/wikipedia/commons/2/2a/Dot.png"}
-//     //                         });                        
-//     //         }                
-//     //         marker_layer.features(markers);
-//     //         // .factory(function(f) {
-//     //         //     if (f.properties.image) {
-//     //         //         var img = document.createElement('img');
-//     //         //         img.className = 'marker-image';
-//     //         //         img.setAttribute('src', f.properties.image);
-//     //         //         return img;
-//     //         //     }
-//     //         // });
-//     //         map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
-//     //     },
-//     //     error: function (jqXHR, textStatus, errorThrown) {
-//     //         console.log(jqXHR);                    
-//     //         alert("Sequence request failed:\n" + errorThrown);
-//     //         window.location.reload();
-//     //     }
-//     // }); 
-// }        
+function loadWalk () {
+    console.log("loadWalk " + walk_index);
+    // $.ajax({
+    //     type: 'GET',
+    //     url: 'sequence.py',
+    //     data: {'index': walk_index},
+    //     dataType: 'json',
+    //     success: function (data, textStatus, jqXHR) {
+    //         walk_data = data;
+    //         var start_location = data['geo_data'][0].slice(0, 2);
+    //         var stop_location = data['geo_data'][data['geo_data'].length - 1].slice(0, 2);
+    //         markers = [];
+    //         markers.push({  geometry: {coordinates: start_location}, 
+    //                         properties: {'marker-color': '#000', 'marker-symbol': 'circle', 'marker-size': 'large'}
+    //                     });                    
+    //         markers.push({  geometry: {coordinates: stop_location}, 
+    //                         properties: {'marker-color': '#000', 'marker-symbol': 'embassy', 'marker-size': 'large'}
+    //                     });    
+    //         for (var i=0; i<data['geo_data'].length - 2; i++) {
+    //             markers.push({  geometry: {coordinates: data['geo_data'][i].slice(0, 2)},
+    //                             properties: {'marker-color': '#9cf', 'marker-size': 'small', 'image': "http://upload.wikimedia.org/wikipedia/commons/2/2a/Dot.png"}
+    //                         });                        
+    //         }                
+    //         marker_layer.features(markers);
+    //         // .factory(function(f) {
+    //         //     if (f.properties.image) {
+    //         //         var img = document.createElement('img');
+    //         //         img.className = 'marker-image';
+    //         //         img.setAttribute('src', f.properties.image);
+    //         //         return img;
+    //         //     }
+    //         // });
+    //         map.zoom(17).center({ lon: start_location[0], lat: start_location[1] });                                        
+    //     },
+    //     error: function (jqXHR, textStatus, errorThrown) {
+    //         console.log(jqXHR);                    
+    //         alert("Sequence request failed:\n" + errorThrown);
+    //         window.location.reload();
+    //     }
+    // }); 
+}        
 
-// function startWalk () {
-//     console.log("startWalk");
-//     $('#walk_select').hide();
-//     $('#start_btn').hide();            
-//     playSound('left', 0, 0.0, 0.0); // iOS needs this
-//     playSound('right', 0, 0.0, 0.0); // iOS needs this
-//     startAudio();
-// }
+function startWalk () {
+    console.log("startWalk");
+    $('#walk_select').hide();
+    $('#start_btn').hide();            
+    playSound('left', 0, 0.0, 0.0); // iOS needs this
+    playSound('right', 0, 0.0, 0.0); // iOS needs this
+    startAudio();
+}
 
-// function startAudio () {
-//     console.log("startAudio");
-//     $('#stop_btn').show();
-//     sequence = walk_data['steps'];
-//     audio_start_time = context.currentTime;
-//     for (var i=0; i<4; i++) {
-//         if (i % 2 == 0) {
-//             playSound('left', audio_start_time + i, 1.0, 0.0);
-//         } else {
-//             playSound('right', audio_start_time + i, 1.0, 1.0);
-//         }
-//     }
-//     audio_start_time += 4;  // now starting from after countoff
-//     setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going (step starting is corrected for in process.py)
-//     queueAudio();
-//     sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
-// }
+function startAudio () {
+    console.log("startAudio");
+    $('#stop_btn').show();
+    sequence = walk_data['steps'];
+    audio_start_time = context.currentTime;
+    for (var i=0; i<4; i++) {
+        if (i % 2 == 0) {
+            playSound('left', audio_start_time + i, 1.0, 0.0);
+        } else {
+            playSound('right', audio_start_time + i, 1.0, 1.0);
+        }
+    }
+    audio_start_time += 4;  // now starting from after countoff
+    setTimeout(startRecording, 4000 - 500); // half second for the accelerometer to get going (step starting is corrected for in process.py)
+    queueAudio();
+    sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
+}
 
-// function queueAudio () {
-//     console.log("queueAudio " + sequence.length);
-//     // schedule notes from the queue that are happening in the next 10s or so
-//     do {
-//         if (sequence.length == 0) {
-//             clearInterval(sequence_interval);
-//             return;
-//         }
-//         var note = sequence.shift()
-//         var time = audio_start_time + (note[0] / 1000.0);
-//         var name = note[1];                        
-//         playSound(name, time, 1.0, name == 'left' ? 0.0 : 1.0);
-//     } while ((time - context.currentTime) < 10);    
-// }
+function queueAudio () {
+    console.log("queueAudio " + sequence.length);
+    // schedule notes from the queue that are happening in the next 10s or so
+    do {
+        if (sequence.length == 0) {
+            clearInterval(sequence_interval);
+            return;
+        }
+        var note = sequence.shift()
+        var time = audio_start_time + (note[0] / 1000.0);
+        var name = note[1];                        
+        playSound(name, time, 1.0, name == 'left' ? 0.0 : 1.0);
+    } while ((time - context.currentTime) < 10);    
+}
 
-// function startRecording () {
-//     console.log("startRecording");
-//     $('#readings').show();
-//     getGeoLocation();
-//     geo_interval = setInterval(getGeoLocation, 10000);            
-//     start_time = timestamp();
-//     window.ondevicemotion = function(event) {
-//         var d = [timestamp(), event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
-//         $('#display_x').html(d[1]);
-//         $('#display_y').html(d[2]);
-//         $('#display_z').html(d[3]);
-//         accel_data.push(d);
-//     }
-// }
+function startRecording () {
+    console.log("startRecording");
+    $('#readings').show();
+    getGeoLocation();
+    geo_interval = setInterval(getGeoLocation, 10000);            
+    start_time = timestamp();
+    window.ondevicemotion = function(event) {
+        var d = [timestamp() - start_time, event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
+        $('#display_x').html(d[1]);
+        $('#display_y').html(d[2]);
+        $('#display_z').html(d[3]);
+        accel_data.push(d);
+    }
+}
 
-// function getGeoLocation () {
-//     console.log("getGeoLocation");
-//     navigator.geolocation.getCurrentPosition(receiveGeoLocation);
-// }
+function stopWalk () {
+    console.log("stopWalk");
+    stop_time = timestamp();
+    window.ondevicemotion = function(event) { };            
+    master_gain_node.gain.value = 0.0;
+    getGeoLocation();
+    clearInterval(geo_interval);
+    sendLog();
+}
 
-// function receiveGeoLocation (location) {
-//     geo_data.push([location.coords.longitude, location.coords.latitude, timestamp()]);
-//     map.panTo([location.coords.latitude, location.coords.longitude]);    
-// }                                
-
-// function stopWalk () {
-//     console.log("stopWalk");
-//     stop_time = timestamp();
-//     window.ondevicemotion = function(event) { };            
-//     master_gain_node.gain.value = 0.0;
-//     getGeoLocation();
-//     clearInterval(geo_interval);
-//     sendLog();
-// }
-
-// function sendLog () {
-//     console.log("sendLog");
-//     $('#stop_btn').hide();
-//     $('#readings').hide();
-//     var duration = stop_time - start_time;
-//     var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration};
-//     walk_data = JSON.stringify(walk_data);            
-//     $.ajax({
-//         type: 'POST',
-//         url: 'index.py', 
-//         data: {'walk_data': walk_data}, 
-//         success: function () {
-//             alert("Success!");
-//             window.location.reload();
-//         },
-//         error: function (jqXHR, textStatus, errorThrown) {
-//             alert("Log failed: " + errorThrown);
-//             window.location.reload();
-//         }
-//     });
-// }
+function sendLog () {
+    console.log("sendLog");
+    $('#stop_btn').hide();
+    $('#readings').hide();
+    var duration = stop_time - start_time;
+    var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration};
+    walk_data = JSON.stringify(walk_data);            
+    $.ajax({
+        type: 'POST',
+        url: 'index.py', 
+        data: {'walk_data': walk_data}, 
+        success: function () {
+            alert("Success!");
+            window.location.reload();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("Log failed: " + errorThrown);
+            window.location.reload();
+        }
+    });
+}
 
 $(document).ready(function() {                   
 

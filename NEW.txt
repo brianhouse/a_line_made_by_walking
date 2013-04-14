@@ -1,12 +1,5 @@
 
-
-sqlite?
-
-crashdb might be a problem. use sqlite?
-
-/
-
-browser sanity check
+browser sanity check -- needs to be ios safari
 
 /
 
@@ -16,7 +9,12 @@ big question is generalizing the gait detection.
 
 specialized issues: timeouts cease to work when phone sleeps
 
-
-
-
 if the phone is clicked off, does that kill the timeout?
+
+/
+
+circle icons on map, with lines extending out
+
+click on the circle, loads up the walk
+
+what if there are overlapping walks?

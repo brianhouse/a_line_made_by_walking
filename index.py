@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-import os, time, json, datetime
+import os, time, json, datetime, model
 from housepy import page, log
-from housepy.crashdb import CrashDB
 from process import process_walk
 
 if page.method == 'POST':
@@ -15,23 +14,17 @@ if page.method == 'POST':
     if not len(data):
         page.error("No data")
         exit()
-    index = data['start_time']
-    log.info("Saving data...")
-    db = CrashDB("walk_data.json")
-    db[index] = data
-    db.close()
+    walk_id = model.insert_walk(data)
     log.info("Processing data...")
     try:    
-        process_walk(data)
+        process_walk(data['accel_data'], walk_id)
     except Exception as e:
         page.error("Could not process: %s" % log.exc(e))
         exit()
     log.info("--> done")
     page.text("OK")
 else:
-    db = CrashDB("sequence_data.json")    
     options = {}
-    for timestamp in db:
-        options[timestamp] = datetime.datetime.fromtimestamp(int(float(timestamp) / 1000.0))
-    db.close()        
+    for walk in model.fetch_walks():
+        options[walk['start_time']] = datetime.datetime.fromtimestamp(int(float(walk['start_time']) / 1000.0))
     page.render("home.html", {'options': options})

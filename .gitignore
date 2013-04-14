@@ -16,3 +16,4 @@ sequence_data.json
 documentation
 old_data
 braid
+*.db

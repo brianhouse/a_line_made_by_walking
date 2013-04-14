@@ -1,26 +1,14 @@
 #!/usr/bin/env python
 
-import sys, json, time
+import sys, json, time, model
 import numpy as np
 from housepy import log, config, science
 from housepy import signal_processing as sp
-from housepy.crashdb import CrashDB, CrashDBError
 
-def process_walk(data):
-
-    # store data
-    index = data['start_time']
-    duration = data['duration']
-    geo_data = data['geo_data']
-
-    # get data    
-    data = np.array(data['accel_data'])
-    if not len(data):
-        log.info("--> no acceleration data")
-        return
-    ts = data[:,0] - np.min(data[:,0]) # make ms timestamps relative
+def process_walk(accel_data, walk_id):
 
     # let's sample every millisecond, so the time of the last reading is how many samples we need
+    ts = data[:,0]
     total_samples = ts[-1]
     log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
 
@@ -90,15 +78,13 @@ def process_walk(data):
     total_samples -= start
 
     # print out
-    log.info("Saving sequence (%s)..." % index)
-    db = CrashDB("sequence_data.json")
+    log.info("Saving sequence (%s)..." % walk_id)
     ## will have to change this to real right/lefts
     sequence = []
     for p, peak in enumerate(peaks):
         foot = 'left' if p % 2 == 0 else 'right'
         sequence.append((peak[0], foot))
-    db[index] = {'steps': sequence, 'geo_data': geo_data, 'start_time': index, 'duration': duration}
-    db.close()
+    model.insert_sequence(walk_id, sequence)
 
     plot(index, xs, ys, zs, ds, peaks, valleys, total_samples)
 
