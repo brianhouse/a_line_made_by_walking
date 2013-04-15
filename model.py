@@ -41,9 +41,7 @@ def insert_walk(walk):
 def insert_sequence(walk_id, sequence):
     try:
         for step in sequence:
-            log.debug(walk_id)
-            log.debug(sequence)
-            db.execute("INSERT INTO sequence (walk_id, t, foot) VALUES (?, ?, ?)", (walk_id, sequence[0], sequence[1]))
+            db.execute("INSERT INTO sequence (walk_id, t, foot) VALUES (?, ?, ?)", (walk_id, int(sequence[0]), sequence[1]))
     except Exception as e:
         log.error(log.exc(e))
         return None
