@@ -94,8 +94,8 @@ function queueAudio () {
             return;
         }
         var note = sequence.shift()
-        var time = audio_start_time + (note[0] / 1000.0);
-        var name = note[1];                        
+        var time = audio_start_time + (note['t'] / 1000.0);
+        var name = note['foot'];                        
         playSound(name, time, 1.0, name == 'left' ? 0.0 : 1.0);
     } while ((time - context.currentTime) < 10);    
 }
