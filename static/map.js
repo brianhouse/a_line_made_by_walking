@@ -79,13 +79,12 @@ function loadWalks () {
     });
 }
 
-function startWalk () {
-    window.location = "/ready/" + walk_id;    
-}
-
 $(document).ready(function() {                   
     initMap();
     loadWalks();
+    $('#start_btn').click(function () {
+        window.location = "/ready/" + walk_id;
+    });
 });  
 
 

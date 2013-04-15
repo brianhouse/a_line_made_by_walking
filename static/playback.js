@@ -61,9 +61,6 @@ function timestamp () {
 
 function startWalk () {
     console.log("startWalk");
-    $('#walk_select').hide();
-    $('#start_btn').hide();            
-    $('#stop_btn').show();    
     playSound('left', 0, 0.0, 0.0); // iOS needs this
     playSound('right', 0, 0.0, 0.0); // iOS needs this
     setTimeout(startRecording, 4000 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
@@ -128,7 +125,7 @@ function stopWalk () {
 
 function sendWalk () {
     console.log("sendWalk");
-    $('#stop_btn').hide();
+    $('#start_btn').hide();
     $('#readings').hide();
     var duration = stop_time - start_time;
     if (start_time == null) {
@@ -169,6 +166,10 @@ $(document).ready(function() {
     loadSound('left', "/static/snd/left.wav");
     loadSound('right', "/static/snd/right.wav");    
 
-    setTimeout(startWalk, 3000);
+    $('#start_btn').click(function () {
+        startWalk();
+        $('#start_btn').html("STOP");
+        $('#start_btn').click(stopWalk);
+    });
 
 });  

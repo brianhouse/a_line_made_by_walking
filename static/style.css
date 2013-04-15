@@ -47,7 +47,7 @@ body, html {
         text-decoration: none;
         display: block;
     }
-    .instructions a.stop {
+    .instructions a#start_btn {
         font-size: 40px;
         text-decoration: none;
         display: block;
@@ -56,7 +56,7 @@ body, html {
         width: 100px;
         margin: auto;
     }
-        .instructions a.stop:hover {
+        .instructions a#start_btn:hover {
             background-color: white;
             color: #666;
         }
