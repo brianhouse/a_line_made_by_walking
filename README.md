@@ -5,6 +5,11 @@ _Footfollow_ is an experiment in patterns and contraints, data and control. It's
 
 
 
+Server reminders
+----------------
+    sudo service nginx start
+
+
 ### Copyright/License
 
 Copyright (c) 2013 Brian House

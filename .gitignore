@@ -7,3 +7,4 @@ charts/*
 *.db
 signal_processing
 run
+*.pem
