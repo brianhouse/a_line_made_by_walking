@@ -20,7 +20,7 @@ function getGeoLocation () {
 function receiveGeoLocation (location) {
     console.log("receiveGeoLocation");
     if (recording) {
-        geo_data.push([timestamp() - start_time, location.coords.longitude, location.coords.latitude]);
+        geo_data.push([timestamp() - start_time, location.coords.latitude, location.coords.longitude]);
     }
 } 
 
@@ -38,18 +38,18 @@ function loadSound (name, url) {
     request.send();
 }
 
-function playSound (name, time, volume, pan) {
-    console.log("play " + name + " at " + time);
+function playSound (name, time, volume, pan) {    
+    console.log("play " + name + "(" + volume + ") at " + time);
     buffer = buffers[name];
     var source = context.createBufferSource();       // creates a sound source
     source.buffer = buffer;                          // tell the source which sound to play
     var pan_node = context.createPanner();           // create the panning node
     source.connect(pan_node);                        // connect the pan to the source        
-    pan_node.panningModel = webkitAudioPannerNode.EQUALPOWER;    
+    // pan_node.panningModel = webkitAudioPannerNode.EQUALPOWER;    this seems to have been broken; boosting levels to compensate
+    volume = volume * 4
     pan_node.setPosition((pan * 20.0) - 10.0, 0, 0); // set panning value (0-1)
     var gain_node = context.createGainNode();        // create a gain node
     pan_node.connect(gain_node);                     // connect the gain to the pan
-    // source.connect(gain_node);                       // connect the gain to the source    
     gain_node.gain.value = volume;                   // set the volume    
     gain_node.connect(master_gain_node);             // connect to master
     source.noteOn(time);                             // play the source in x seconds

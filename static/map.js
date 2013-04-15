@@ -66,12 +66,15 @@ function loadWalks () {
     console.log("loadWalks");
     $.each(walk_data, function(w, walk) {
         if (walk['geo_data'] == undefined) return;    
+        console.log(walk);        
         var points = [];
         for (p in walk['geo_data']) {
             points.push(new L.LatLng(walk['geo_data'][p]['lat'], walk['geo_data'][p]['lng']));
         }
+        console.log(points);
         var color = '#' + Math.floor(Math.random() * 16777215).toString(16);
         var walk_marker = L.circleMarker(points[0], {radius: 30, color: color, stroke: true, fillOpacity: 0.75, clickable: false}).addTo(map);
+        console.log(walk_marker);
         var walk_path = new L.Polyline(points, {color: color, weight: 5, opacity: 0.75, smoothFactor: 2}).addTo(map);
         walk_markers.push(walk_marker);
         walk_paths.push(walk_path);
