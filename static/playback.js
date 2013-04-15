@@ -139,7 +139,7 @@ function sendWalk () {
     $.ajax({
         type: 'POST',
         url: '/', 
-        data: {'walk_data': walk_data}, 
+        data: {walk_data: walk_data, _xsrf: _xsrf()}, 
         success: function (result) {
             alert("Success!");
             window.location = "/thanks";

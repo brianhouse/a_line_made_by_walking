@@ -1,8 +1,5 @@
-ok, so each walk is:
-5*60 / 10 = 30 gps points
 
-that's fine. we can load everything and plot it.
-
+apparently I have to do the xsrf thing
 
 /
 
