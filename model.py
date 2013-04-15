@@ -11,12 +11,12 @@ db = connection.cursor()
 
 def init():
     try:
-        db.execute("CREATE TABLE walks (id INT PRIMARY KEY, start_time INT, duration INT)")
-        db.execute("CREATE TABLE geo_data (walk_id INT, t INT, lat REAL, lng REAL)")
+        db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER)")
+        db.execute("CREATE TABLE geo_data (walk_id INTEGER, t INTEGER, lat REAL, lng REAL)")
         db.execute("CREATE INDEX geo_data_walk_id ON geo_data(walk_id)")
-        db.execute("CREATE TABLE accel_data (walk_id INT, t INT, x REAL, y REAL, z REAL)")
+        db.execute("CREATE TABLE accel_data (walk_id INTEGER, t INTEGER, x REAL, y REAL, z REAL)")
         db.execute("CREATE INDEX accel_data_walk_id ON accel_data(walk_id)")
-        db.execute("CREATE TABLE sequence (walk_id INT, t INT, foot TEXT)")
+        db.execute("CREATE TABLE sequence (walk_id INTEGER, t INTEGER, foot TEXT)")
         db.execute("CREATE INDEX sequence_walk_id ON sequence(walk_id)")
     except Exception as e:
         if not "already exists" in e.message:
