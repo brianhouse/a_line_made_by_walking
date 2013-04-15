@@ -51,12 +51,12 @@ def fetch_walks():
     db.execute("SELECT * FROM walks")
     walks = dict(db.fetchall())
     for walk in walks:
-        geo_data = db.execute("SELECT * FROM geo_data WHERE walk_id=?", walk['id'])
+        geo_data = db.execute("SELECT * FROM geo_data WHERE walk_id=?", (walk['id'],))
         walk['geo_data'] = walk
     return walks
 
 def fetch_sequence(walk_id):
-    db.execute("SELECT * FROM sequence WHERE walk_id=?", walk_id)
+    db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
     rows = db.fetchall()
     return rows
 

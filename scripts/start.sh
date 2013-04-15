@@ -1,2 +1,2 @@
-sudo ./main.py &
+./main.py &
 tail -f logs/main.log

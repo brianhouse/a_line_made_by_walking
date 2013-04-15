@@ -7,6 +7,7 @@ _Footfollow_ is an experiment in patterns and contraints, data and control. It's
 
 Server reminders
 ----------------
+    cp footfollow/ngnix.conf /etc/nginx/
     sudo service nginx start
 
 
