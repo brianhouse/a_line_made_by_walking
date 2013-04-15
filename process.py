@@ -9,7 +9,7 @@ def process_walk(data, walk_id):
 
     # let's sample every millisecond, so the time of the last reading is how many samples we need
     data = np.array(data)
-    log.debug(data)
+    # log.debug(data)
     ts = data[:,0]
     total_samples = ts[-1]
     log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
@@ -88,10 +88,10 @@ def process_walk(data, walk_id):
         sequence.append((peak[0], foot))
     model.insert_sequence(walk_id, sequence)
 
-    plot(index, xs, ys, zs, ds, peaks, valleys, total_samples)
+    plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples)
 
 
-def plot(index, xs, ys, zs, ds, peaks, valleys, total_samples):
+def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples):
 
     try:
         from housepy import drawing
@@ -114,7 +114,7 @@ def plot(index, xs, ys, zs, ds, peaks, valleys, total_samples):
         x, y = valley
         x = float(x) / total_samples
         ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
-    ctx.image.save("charts/%s_%s.png" % (index, int(time.time())), "PNG")
+    ctx.image.save("charts/%s_%s.png" % (walk_id, int(time.time())), "PNG")
     if __name__ == "__main__":
         ctx.show()
 
