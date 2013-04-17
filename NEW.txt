@@ -1,10 +1,21 @@
+ok.
 
-apparently I have to do the xsrf thing
+- welcome, description
+- device set up: sound, sleep, pocket
+- route information
+- route map, with start activation
+- ready screen
+- walking
+- done
 
-/
+who do they follow?
+well, me. that way it will always work.
 
-what if there are overlapping walks?
-can have a manual click
+but then we dont get feedback.
+
+config option for which one to choose.
+
+
 
 
 //

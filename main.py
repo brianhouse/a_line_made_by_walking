@@ -12,18 +12,13 @@ class Home(tornado_server.Handler):
 
     def get(self, page=None, walk_id=None):
         log.info("Home.get %s" % page)
-        if page == "map":
-            return self.render("map.html", walks=json.dumps(model.fetch_walks()))
-        elif page == "choose":
-            return self.render("choose.html")
-        elif page == "ready":
-            return self.render("ready.html", walk_id=walk_id)
-        elif page == "walk":
+        if not len(page):
+            return self.render("home.html")        
+        if page == "walk":
             return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id))) 
-        elif page == "thanks":
-            return self.render("thanks.html")           
-        else:
-            return self.render("home.html")
+        if page in ["prepare", "route", "map", "ready", "thanks"]:
+            return self.render("%s.html" % page)
+        return self.not_found()
 
     def post(self, nop=None, nop2=None):
         log.info("Home.post")
