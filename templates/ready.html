@@ -10,13 +10,12 @@
                 playSound('right', 0, 0.0, 0.0); // iOS needs this            
                 window.location = "/walk/{{ walk_id }}";
             });
-            if (window.deviceorientationevent == undefined) {
-                $('#compass_holder').hide();
-            } else {
-                window.ondeviceorientation = function (e) {
-                    console.log(e.webkitCompassHeading);
+            $('#compass_holder').hide();
+            window.ondeviceorientation = function (e) {
+                if (e.webkitCompassHeading != undefined) {
+                    $('#compass_holder').show();
+                    $('#compass').rotate(-1 * (e.webkitCompassHeading + window.orientation) + 270); // west
                 }
-                $('#compass').rotate(e.webkitCompassHeading);
             }
         });
     </script>
