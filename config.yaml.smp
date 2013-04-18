@@ -1,6 +1,8 @@
 tail: True
 log: False
 
+live: False
+
 tornado:
     port: 2222
     log_templates: False

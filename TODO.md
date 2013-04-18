@@ -1,7 +1,7 @@
 ### todo
 
 - check: readings dont reappear
-
+- set domain (needs to propagate)
 
 ### bugs
 

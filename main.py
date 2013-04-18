@@ -12,6 +12,8 @@ class Home(tornado_server.Handler):
 
     def get(self, page=None, walk_id=None):
         log.info("Home.get %s" % page)
+        if not config['live']:
+            return self.render("placeholder.html")
         if not len(page):
             return self.render("home.html")        
         if page == "walk":
@@ -30,12 +32,12 @@ class Home(tornado_server.Handler):
         if not len(data['accel_data']):
             return self.error("NO DATA")
         walk_id = model.insert_walk(data)
-        log.info("Processing data...")
-        try:    
-            process_walk(data['accel_data'], walk_id)
-        except Exception as e:
-            return self.error("Could not process: %s" % log.exc(e))
-        log.info("--> done")
+        # log.info("Processing data...")
+        # try:    
+        #     process_walk(walk_id)
+        # except Exception as e:
+        #     return self.error("Could not process: %s" % log.exc(e))
+        # log.info("--> done")
         return self.text("OK")
 
 

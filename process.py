@@ -5,7 +5,11 @@ import numpy as np
 import signal_processing as sp
 from housepy import log, config
 
-def process_walk(data, walk_id):
+def process_walk(walk_id):
+
+    data = model.fetch_accels(walk_id)
+    data = [(reading['t'], reading['x'], reading['y'], reading['z']) for reading in data]
+    log.debug(data)
 
     # let's sample every millisecond, so the time of the last reading is how many samples we need
     data = np.array(data)
@@ -117,6 +121,13 @@ def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples):
     ctx.image.save("charts/%s_%s.png" % (walk_id, int(time.time())), "PNG")
     if __name__ == "__main__":
         ctx.show()
+
+
+if __name__ == "__main__":
+    walk_id = sys.argv[1]
+    process_walk(walk_id)
+
+
 
 
 # ## other ideas
