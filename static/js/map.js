@@ -7,12 +7,12 @@ var current_location_marker = null;
 // var walk_paths = [];
 // var walk_ids = [];
 // var walk_id = null;
-var trigger_radius = 30; // ft
+var trigger_radius = 40; // ft
 // var start_point = new L.LatLng(40.72649,-73.991938); // nyc
 var start_point = new L.LatLng(41.820427,-71.401595); // pvd
 // var start_point = new L.LatLng(41.82049, -71.40079); // transit
 var walk_marker = null;
-var walk_path = null;
+// var walk_path = null;
 
 function initMap () {
     map = new L.map('map', {
@@ -33,7 +33,7 @@ function initMap () {
     getGeoLocation();
     setInterval(function () {
         getGeoLocation();        
-    }, 10000);                
+    }, 5000);                
 }
 
 function getGeoLocation () {
@@ -52,13 +52,13 @@ function receiveGeoLocation (location) {
     } else {
         current_location_marker.setLatLng(latlng);
     } 
-    if (walk_path != null) {
-        map.removeLayer(walk_path);
-    }
-    walk_path = new L.Polyline([start_point, latlng], {color: "#fff", weight: 5, opacity: 1.0, smoothFactor: 2}).addTo(map);
+    // if (walk_path != null) {
+    //     map.removeLayer(walk_path);
+    // }
+    // walk_path = new L.Polyline([start_point, latlng], {color: "#fff", weight: 5, opacity: 1.0, smoothFactor: 2}).addTo(map);
     var distance = geoDistance(latlng, start_point);
     if (distance < trigger_radius) {
-        map.removeLayer(walk_path);
+        // map.removeLayer(walk_path);
         current_location_marker.setStyle({color: "#00f"});
         walk_marker.setStyle({color: "#00f"});
         window.location = "/walk";
