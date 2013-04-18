@@ -1,12 +1,30 @@
 {% extends "page.html" %}
 
+{% block head %}
+    <script type="text/javascript" src="/static/js/jQueryRotateCompressed.2.2.js"></script>    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (window.deviceorientationevent == undefined) {
+                $('#compass_holder').hide();
+            } else {
+                window.ondeviceorientation = function (e) {
+                    console.log(e.webkitCompassHeading);
+                }
+                $('#compass').rotate(30);
+            }
+        });
+    </script>
+{% endblock head %}
+
 {% block body %}
 
     <div class="instructions">
         <h4>
             <span class="title"><b>Step 3</b>: get ready</span>
         </h4>
-        When you are ready, touch the arrow and <b>put your phone in your front right pocket</b>. After the count-off, start walking towards Broadway. Broadway is this direction:<br />
+        When you are ready, touch the arrow and <b>put your phone in your front right pocket</b>. After the count-off, start walking towards Broadway. <span id="compass_holder">Broadway is this direction:<br />
+        <div style="text-align: center"><img id="compass" style="width: 50px; height: 50px; margin: auto;" src="/static/img/compass.png" /></div></span><br />
+        <br />
         <br />
         You will hear the timing of the footsteps that came before you. Your own footsteps are being recorded.<br />
         <br />
