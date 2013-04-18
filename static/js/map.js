@@ -10,6 +10,8 @@ var current_location_marker = null;
 var trigger_radius = 30; // ft
 // var start_point = new L.LatLng(40.72649,-73.991938); // nyc
 var start_point = new L.LatLng(41.820427,-71.401595); // pvd
+// var start_point = new L.LatLng(41.82049, -71.40079); // transit
+var walk_marker = null;
 var walk_path = null;
 
 function initMap () {
@@ -79,7 +81,7 @@ function receiveGeoLocation (location) {
 
 function makeStart () {
     console.log("makeStart");
-    var walk_marker = L.circleMarker(start_point, {radius: 15, color: "#0f0", stroke: true, fillOpacity: 0.75, clickable: false}).addTo(map);
+    walk_marker = L.circleMarker(start_point, {radius: 15, color: "#0f0", stroke: true, fillOpacity: 0.75, clickable: false}).addTo(map);
 }
 
 // function loadWalks () {

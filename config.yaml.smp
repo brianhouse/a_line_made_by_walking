@@ -4,3 +4,5 @@ log: False
 tornado:
     port: 2222
     log_templates: False
+
+walk_id: 1

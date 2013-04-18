@@ -1,6 +1,6 @@
 ### todo
 
-- set max walk time (5 min)
+- check: readings dont reappear
 
 
 ### bugs

@@ -132,7 +132,6 @@ function sendWalk () {
         url: '/', 
         data: {walk_data: walk_data, _xsrf: _xsrf()}, 
         success: function (result) {
-            alert("Success!");
             window.location = "/thanks";
         },
         error: function (result) {
@@ -162,7 +161,8 @@ $(document).ready(function () {
         $('#title').html("Walking...");
         $('#text').hide();
         $('#pocket').html("(phone in pocket)");
-        $('#start_btn').html("STOP");    
+        $('#start_btn').html("STOP");
+        $('#start_btn').unbind("click");
         $('#start_btn').click(function () {
             stopWalk();
         });
