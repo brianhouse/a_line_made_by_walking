@@ -32,12 +32,9 @@ body, html {
     }
     .instructions h3 {
         margin-top: 0px;
+        margin-bottom: 40px;
         font-weight: normal;
         font-size: 14px;
-    }
-    .instructions h4 {
-        font-weight: normal;
-        font-size: 30px;
     }
     .instructions a {
         color: white;
@@ -52,9 +49,8 @@ body, html {
         text-decoration: none;
         display: block;
         background-color: #666;
-        padding: 5px;
+        padding: 10px;
         width: 100px;
-        margin: auto;
     }
         .instructions a#start_btn:hover {
             background-color: white;

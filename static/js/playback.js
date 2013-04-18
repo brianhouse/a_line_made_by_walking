@@ -61,23 +61,17 @@ function timestamp () {
 
 function startWalk () {
     console.log("startWalk");
-    // playSound('left', 0, 0.0, 0.0); // iOS needs this
-    // playSound('right', 0, 0.0, 0.0); // iOS needs this
-    setTimeout(startRecording, 4000 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
+    playSound('left', 0, 0.0, 0.0); // iOS needs this
+    playSound('right', 0, 0.0, 0.0); // iOS needs this
+    setTimeout(startRecording, 3820 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
     startAudio();
 }
 
 function startAudio () {
     console.log("startAudio");
     audio_start_time = context.currentTime;
-    for (var i=0; i<4; i++) {
-        if (i % 2 == 0) {
-            playSound('left', audio_start_time + i, 1.0, 0.0);
-        } else {
-            playSound('right', audio_start_time + i, 1.0, 1.0);
-        }
-    }
-    audio_start_time += 4;  // now starting from after countoff
+    playSound('countdown', audio_start_time, 0.125, 0.5);
+    audio_start_time += 3.82;  // now starting from after countoff (file is 3:49)
     queueAudio();
     sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
 }
@@ -114,6 +108,8 @@ function startRecording () {
 
 function stopWalk () {
     console.log("stopWalk");
+    $('#start_btn').hide();
+    $('#readings').hide();    
     stop_time = timestamp();
     window.ondevicemotion = function(event) { };            
     master_gain_node.gain.value = 0.0;
@@ -125,8 +121,6 @@ function stopWalk () {
 
 function sendWalk () {
     console.log("sendWalk");
-    $('#start_btn').hide();
-    $('#readings').hide();
     var duration = stop_time - start_time;
     if (start_time == null) {
         duration == null;
@@ -147,3 +141,40 @@ function sendWalk () {
         }
     });
 }
+
+$(document).ready(function () {
+    getGeoLocation();
+    geo_interval = setInterval(function () {
+        getGeoLocation();        
+    }, 10000);                            
+    try {
+        context = new webkitAudioContext();
+        master_gain_node = context.createGainNode();
+        master_gain_node.connect(context.destination);          // connect the master gain to the destination
+    } catch(e) {
+        alert("Web Audio API is not supported in this browser");
+        window.location = "/";
+    }            
+    loadSound('left', "/static/snd/left.wav");
+    loadSound('right', "/static/snd/right.wav");                
+    loadSound('countdown', "/static/snd/countdown.wav");
+    $('#start_btn').click(function () {
+        $('#title').html("Walking...");
+        $('#text').hide();
+        $('#pocket').html("(phone in pocket)");
+        $('#start_btn').html("STOP");    
+        $('#start_btn').click(function () {
+            stopWalk();
+        });
+        startWalk();        
+    });
+    $('#compass_holder').hide();
+    window.ondeviceorientation = function (e) {
+        if (e.webkitCompassHeading != undefined) {
+            $('#compass_holder').show();
+            $('#compass').rotate(-1 * (e.webkitCompassHeading + window.orientation) + 270); // west
+        }
+    }
+    setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min
+});
+

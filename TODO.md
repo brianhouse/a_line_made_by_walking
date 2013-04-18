@@ -1,22 +1,6 @@
-### questions
-
-how universal is it?
-does it have to be in the pocket?
-set a route, or ...
-
-
-
 ### todo
 
-switch to leaflet
-
-eventually:
-- countdown sounds different sounds
-- leaflet seems the better thing to use
-- identity, based on phone
-- start button doesnt appear until route is loaded
-- home screen shows location of nearby walks?
-- walk management -- delete, etc
+- set max walk time (5 min)
 
 
 ### bugs
@@ -53,14 +37,6 @@ is that the case with leaflet?
 
 ### ml notes
 
-ok, so looking at closeup data, we're missing peaks.
-
-decreasing threshold, and now we've got more -- and they sound like doubles. crazy.
-
-switching to valleys, and it's pretty close.
-
-/
-
 actually define the shape grouping, the triple of peak shallowvalley peak deepvalley peak, with the peaks around the deepvalley closer together
 
 need some kind of relative expectation algorithm
@@ -84,14 +60,7 @@ http://www.atasoyweb.net/resimgoster.php?resim=DinamikZamanBukmeAlgoritmasi.png
 
 ### refs
 
-http://en.wikipedia.org/wiki/Hamish_Fulton
+[http://en.wikipedia.org/wiki/Hamish_Fulton](http://en.wikipedia.org/wiki/Hamish_Fulton)
 
 Long, A Line Made by Walking (1967)
-
-
-### future issues
-
-crashdb is not going to be scaleable
-
-
 

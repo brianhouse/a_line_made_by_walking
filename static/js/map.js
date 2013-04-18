@@ -56,7 +56,10 @@ function receiveGeoLocation (location) {
     walk_path = new L.Polyline([start_point, latlng], {color: "#fff", weight: 5, opacity: 1.0, smoothFactor: 2}).addTo(map);
     var distance = geoDistance(latlng, start_point);
     if (distance < trigger_radius) {
-        window.location = "/ready";
+        map.removeLayer(walk_path);
+        current_location_marker.setStyle({color: "#00f"});
+        walk_marker.setStyle({color: "#00f"});
+        window.location = "/walk";
     }
     // $.each(walk_markers, function(index, walk_marker) {
     //     var distance = geoDistance(latlng, walk_marker.getLatLng());
