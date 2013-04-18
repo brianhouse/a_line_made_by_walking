@@ -1,12 +1,36 @@
 {% extends "page.html" %}
 
 {% block head %}
-
     <script type="text/javascript" src="/static/js/playback.js"></script>    
     <script type="text/javascript">
         sequence = {{ sequence }};
-    </script>
 
+        $(document).ready(function() {                   
+
+            getGeoLocation();
+            geo_interval = setInterval(function () {
+                getGeoLocation();        
+            }, 10000);                
+
+            try {
+                context = new webkitAudioContext();
+                master_gain_node = context.createGainNode();
+                master_gain_node.connect(context.destination);          // connect the master gain to the destination
+            } catch(e) {
+                alert("Web Audio API is not supported in this browser");
+            }            
+
+            loadSound('left', "/static/snd/left.wav");
+            loadSound('right', "/static/snd/right.wav");    
+
+            $('#start_btn').click(function () {
+                startWalk();
+                $('#start_btn').html("STOP");
+                $('#start_btn').click(stopWalk);
+            });
+
+        });          
+    </script>
 {% endblock head %}
 
 {% block body %}

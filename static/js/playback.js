@@ -61,8 +61,8 @@ function timestamp () {
 
 function startWalk () {
     console.log("startWalk");
-    playSound('left', 0, 0.0, 0.0); // iOS needs this
-    playSound('right', 0, 0.0, 0.0); // iOS needs this
+    // playSound('left', 0, 0.0, 0.0); // iOS needs this
+    // playSound('right', 0, 0.0, 0.0); // iOS needs this
     setTimeout(startRecording, 4000 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
     startAudio();
 }
@@ -147,29 +147,3 @@ function sendWalk () {
         }
     });
 }
-
-$(document).ready(function() {                   
-
-    getGeoLocation();
-    geo_interval = setInterval(function () {
-        getGeoLocation();        
-    }, 10000);                
-
-    try {
-        context = new webkitAudioContext();
-        master_gain_node = context.createGainNode();
-        master_gain_node.connect(context.destination);          // connect the master gain to the destination
-    } catch(e) {
-        alert("Web Audio API is not supported in this browser");
-    }            
-
-    loadSound('left', "/static/snd/left.wav");
-    loadSound('right', "/static/snd/right.wav");    
-
-    $('#start_btn').click(function () {
-        startWalk();
-        $('#start_btn').html("STOP");
-        $('#start_btn').click(stopWalk);
-    });
-
-});  

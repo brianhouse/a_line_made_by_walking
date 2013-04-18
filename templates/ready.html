@@ -1,16 +1,22 @@
 {% extends "page.html" %}
 
 {% block head %}
+    <script type="text/javascript" src="/static/js/playback.js"></script>
     <script type="text/javascript" src="/static/js/jQueryRotateCompressed.2.2.js"></script>    
     <script type="text/javascript">
         $(document).ready(function () {
+            $('#arrow').click(function () {
+                playSound('left', 0, 0.0, 0.0); // iOS needs this
+                playSound('right', 0, 0.0, 0.0); // iOS needs this            
+                window.location = "/walk/{{ walk_id }}";
+            });
             if (window.deviceorientationevent == undefined) {
                 $('#compass_holder').hide();
             } else {
                 window.ondeviceorientation = function (e) {
                     console.log(e.webkitCompassHeading);
                 }
-                $('#compass').rotate(30);
+                $('#compass').rotate(e.webkitCompassHeading);
             }
         });
     </script>
@@ -30,7 +36,7 @@
         <br />
         When you arrive at Broadway, take your phone out and touch 'stop'.<br />
         <br />
-        <a class="arrow" href="/walk/{{ walk_id }}">&rarr;</a>
+        <a class="arrow" id="arrow">&rarr;</a>
     </div>
 
 {% endblock body %}
