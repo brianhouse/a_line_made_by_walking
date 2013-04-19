@@ -166,6 +166,7 @@ $(document).ready(function () {
         $('#start_btn').click(function () {
             stopWalk();
         });
+        window.ondeviceorientation = null;
         startWalk();        
     });
     $('#compass_holder').hide();
