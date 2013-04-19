@@ -1,5 +1,6 @@
 ### todo
 
+- set domain (needs to propagate)
 
 ### bugs
 
