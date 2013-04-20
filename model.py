@@ -60,8 +60,8 @@ def fetch_walks():
 
 def fetch_sequence(walk_id):
     db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
-    rows = [dict(step) for step in db.fetchall()]
-    return rows
+    sequence = [(step['t'], step['foot']) for step in db.fetchall()]
+    return sequence
 
 def fetch_accels(walk_id):
     db.execute("SELECT * FROM accel_data WHERE walk_id=?", (walk_id,))
