@@ -87,7 +87,7 @@ function queueAudio () {
         var note = sequence.shift()
         var time = audio_start_time + (note[0] / 1000.0);
         var name = note[1];                        
-        playSound(name, time, 1.0, name == 'left' ? 0.0 : 1.0);
+        playSound(name, time, 1.25, name == 'left' ? 0.0 : 1.0);
     } while ((time - context.currentTime) < 10);    
 }
 
@@ -171,7 +171,7 @@ $(document).ready(function () {
    window.ondeviceorientation = function (e) {
        if (e.webkitCompassHeading != undefined) {
            $('#compass_holder').show();
-           $('#compass').rotate(-1 * (e.webkitCompassHeading + window.orientation) + 90); // east
+           $('#compass').rotate(-1 * (e.webkitCompassHeading + window.orientation) + 100); // manhattan east
        }
     }
     setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min

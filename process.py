@@ -13,7 +13,7 @@ def process_walk(walk_id):
 
     data = model.fetch_accels(walk_id)
     data = [(reading['t'], reading['x'], reading['y'], reading['z']) for reading in data]
-    log.debug(data)
+    # log.debug(data)
 
     # let's sample every millisecond, so the time of the last reading is how many samples we need
     data = np.array(data)

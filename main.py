@@ -26,7 +26,7 @@ class Home(tornado_server.Handler):
         log.info("Home.post")
         try:
             data = json.loads(self.get_argument('walk_data'))
-            log.debug(data)
+            # log.debug(data)
         except Exception as e:
             return self.error(log.exc(e))
         if not len(data['accel_data']):

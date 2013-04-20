@@ -54,7 +54,7 @@ def fetch_walks():
         walk = dict(walk)
         db.execute("SELECT * FROM geo_data WHERE walk_id=?", (walk['id'],))
         walk['geo_data'] = [dict(gd) for gd in db.fetchall()]
-        log.debug(walk['geo_data'])
+        # log.debug(walk['geo_data'])
         walks[w] = walk
     return walks
 
