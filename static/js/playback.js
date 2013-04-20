@@ -97,6 +97,7 @@ function startRecording () {
     start_time = timestamp();
     recording = true;
     getGeoLocation();    
+    geo_interval = setInterval(getGeoLocation, 10000);
     window.ondevicemotion = function(event) {
         var d = [timestamp() - start_time, event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
         $('#display_x').html("x: " + d[1]);
@@ -142,10 +143,7 @@ function sendWalk () {
 }
 
 $(document).ready(function () {
-    getGeoLocation();
-    geo_interval = setInterval(function () {
-        getGeoLocation();        
-    }, 10000);                            
+    getGeoLocation();     
     try {
         context = new webkitAudioContext();
         master_gain_node = context.createGainNode();
@@ -177,6 +175,6 @@ $(document).ready(function () {
     //    }
     //}
     setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min
-    console.log('yo3');
+    console.log('yo4');
 });
 
