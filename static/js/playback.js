@@ -45,7 +45,7 @@ function playSound (name, time, volume, pan) {
     source.buffer = buffer;                          // tell the source which sound to play
     var pan_node = context.createPanner();           // create the panning node
     source.connect(pan_node);                        // connect the pan to the source        
-    // pan_node.panningModel = webkitAudioPannerNode.EQUALPOWER;    this seems to have been broken; boosting levels to compensate
+    pan_node.panningModel = webkitAudioPannerNode.EQUALPOWER;    this seems to have been broken; boosting levels to compensate
     volume = volume * 4
     pan_node.setPosition((pan * 20.0) - 10.0, 0, 0); // set panning value (0-1)
     var gain_node = context.createGainNode();        // create a gain node
