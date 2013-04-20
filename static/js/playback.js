@@ -70,7 +70,7 @@ function startWalk () {
 function startAudio () {
     console.log("startAudio");
     audio_start_time = context.currentTime;
-    playSound('countdown', audio_start_time, 0.125, 0.5);
+//    playSound('countdown', audio_start_time, 0.125, 0.5);
     audio_start_time += 3.82;  // now starting from after countoff (file is 3:49)
     queueAudio();
     sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
@@ -156,7 +156,7 @@ $(document).ready(function () {
     }            
     loadSound('left', "/static/snd/left.wav");
     loadSound('right', "/static/snd/right.wav");                
-    loadSound('countdown', "/static/snd/countdown.wav");
+//    loadSound('countdown', "/static/snd/countdown.wav");
     $('#start_btn').click(function () {
         $('#title').html("Walking...");
         $('#text').hide();
@@ -166,16 +166,17 @@ $(document).ready(function () {
         $('#start_btn').click(function () {
             stopWalk();
         });
-        window.ondeviceorientation = null;
+//        window.ondeviceorientation = null;
         startWalk();        
     });
     $('#compass_holder').hide();
-    window.ondeviceorientation = function (e) {
-        if (e.webkitCompassHeading != undefined) {
-            $('#compass_holder').show();
-            $('#compass').rotate(-1 * (e.webkitCompassHeading + window.orientation) + 270); // west
-        }
-    }
+//    window.ondeviceorientation = function (e) {
+ //       if (e.webkitCompassHeading != undefined) {
+  //          $('#compass_holder').show();
+   //         $('#compass').rotate(-1 * (e.webkitCompassHeading + window.orientation) + 270); // west
+    //    }
+    //}
     setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min
+    console.log('yo3');
 });
 
