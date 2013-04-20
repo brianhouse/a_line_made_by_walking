@@ -9,8 +9,8 @@ var current_location_marker = null;
 // var walk_id = null;
 var trigger_radius = 40; // ft
 // var start_point = new L.LatLng(40.72649,-73.991938); // nyc
-var start_point = new L.LatLng(41.820427,-71.401595); // pvd
-// var start_point = new L.LatLng(41.82049, -71.40079); // transit
+var start_point = new L.LatLng(40.735389,-73.998182); // nyc
+// var start_point = new L.LatLng(41.820427,-71.401595); // pvd
 var walk_marker = null;
 // var walk_path = null;
 
