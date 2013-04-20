@@ -7,6 +7,10 @@ from housepy import log, config
 
 def process_walk(walk_id):
 
+    if not model.process_check(walk_id):
+        log.error("Walk already processed")
+        return
+
     data = model.fetch_accels(walk_id)
     data = [(reading['t'], reading['x'], reading['y'], reading['z']) for reading in data]
     log.debug(data)

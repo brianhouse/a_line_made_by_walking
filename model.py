@@ -67,6 +67,10 @@ def fetch_accels(walk_id):
     db.execute("SELECT * FROM accel_data WHERE walk_id=?", (walk_id,))
     rows = [dict(reading) for reading in db.fetchall()]
     return rows
+
+def process_check(walk_id):
+    db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
+    return len(db.fetchall()) == 0
     
 
 
