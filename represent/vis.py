@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 
-import json, time, random
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+import json, time, random, model
+import signal_processing as sp
 from housepy import log, config, drawing
-from housepy.crashdb import CrashDB
-import housepy.signal_processing as sp
 
-# collect notes
-db = CrashDB("sequence_data.json")
+walks = model.fetch_walks()
+walks = [walk for walk in walks if walk['id'] >= config['walk_id']]
+
 notes = []
 v = 0
-for index, walk in db.items():
-    for step in walk['steps']:
+for walk in walks:
+    for step in model.fetch_sequence(walk['id']):
         notes.append((step[0], v, 0 if step[1] == 'left' else 1))
     v += 1
-db.close()        
 
 # sort and normalize onsets
 notes.sort(key=lambda x: x[0])
@@ -21,7 +22,7 @@ onsets = [note[0] for note in notes]
 onsets = sp.normalize(onsets)
 notes = [(onsets[i], note[1], note[2]) for (i, note) in enumerate(notes)]
 
-print notes
+# print(notes)
 
 margin = 50
 ctx = drawing.Context(30000, 500, relative=True, flip=True, margin=margin, background=(252, 245, 216))
@@ -42,7 +43,7 @@ for note in notes:
 
 
 ctx.show()
-ctx.image.save("charts/walk_%s.png" % int(time.time()), "PNG")
+ctx.image.save("charts/vis_%s.png" % int(time.time()), "PNG")
 
 
 """

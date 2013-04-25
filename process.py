@@ -63,7 +63,7 @@ def process_walk(walk_id):
     # detect peaks
     # lookahead should be the minimum time of a step, maybe .3s, 300ms
     peaks, valleys = sp.detect_peaks(ds, lookahead=150, delta=0.15)
-    if peaks[0][0] == 0:
+    if len(peaks) and peaks[0][0] == 0:
         peaks = peaks[1:]
     peaks = np.array(peaks)
     valleys = np.array(valleys)
@@ -122,14 +122,19 @@ def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples):
         x, y = valley
         x = float(x) / total_samples
         ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
-    ctx.image.save("charts/%s_%s.png" % (walk_id, int(time.time())), "PNG")
+    ctx.image.save("charts/steps_%s_%s.png" % (walk_id, int(time.time())), "PNG")
     if __name__ == "__main__":
         ctx.show()
 
 
 if __name__ == "__main__":
     walk_id = sys.argv[1]
-    process_walk(walk_id)
+    if walk_id == "all":
+        walks = model.fetch_walks()
+        for walk in walks:
+            process_walk(walk['id'])
+    else:
+        process_walk(walk_id)
 
 
 

@@ -49,14 +49,13 @@ def insert_sequence(walk_id, sequence):
 
 def fetch_walks():
     db.execute("SELECT * FROM walks")
-    walks = db.fetchall()
-    for w, walk in enumerate(walks):
-        walk = dict(walk)
-        db.execute("SELECT * FROM geo_data WHERE walk_id=?", (walk['id'],))
-        walk['geo_data'] = [dict(gd) for gd in db.fetchall()]
-        # log.debug(walk['geo_data'])
-        walks[w] = walk
-    return walks
+    rows = [dict(gd) for gd in db.fetchall()]
+    return rows    
+
+def fetch_geo(walk_id):
+    db.execute("SELECT * FROM geo_data WHERE walk_id=?", (walk_id,))
+    rows = [dict(gd) for gd in db.fetchall()]
+    return rows
 
 def fetch_sequence(walk_id):
     db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
