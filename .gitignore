@@ -8,3 +8,4 @@ charts/*
 signal_processing
 run
 *.pem
+braid

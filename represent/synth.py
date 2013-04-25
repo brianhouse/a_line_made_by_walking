@@ -1,22 +1,27 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import json, time
+import os, sys, time, json
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+import model
+import signal_processing as sp
 from braid import *
-from housepy import log, config
-from housepy.crashdb import CrashDB
-import housepy.signal_processing as sp
+from braid.voice.msp_swerve import MspSwerve
+
+
+MIN_WALK_ID = 26    # python3 cant use housepy
+
+walks = model.fetch_walks()
+walks = [walk for walk in walks if walk['id'] >= MIN_WALK_ID]
 
 # collect notes
-db = CrashDB("sequence_data.json")
 notes = []
 v = 0
 voices = []
-for index, walk in db.items():
-    voices.append(Voice(v + 1))
-    for step in walk['steps']:
+for walk in walks:
+    voices.append(MspSwerve(v + 1))
+    for step in model.fetch_sequence(walk['id']):
         notes.append((step[0], v, 0 if step[1] == 'left' else 1))
-    v += 1
-db.close()        
+    v += 1   
 
 # sort and normalize onsets
 notes.sort(key=lambda x: x[0])
@@ -25,21 +30,22 @@ onsets = sp.normalize(onsets)
 notes = [(onsets[i], note[1], note[2]) for (i, note) in enumerate(notes)]
 
 
-# define voices
-# for index in db:
-
 for voice in voices:
-    voice.synth = 'cycle'
+    # voice.synth = 'cycle'
+    voice.synth = 'rect'
     voice.attack = 350
-    voice.sustain = 350
+    # voice.sustain = 350
+    voice.sustain = 2000
     voice.decay = 600
-    voice.reverb = 0.7, 0.3, 0.25, 0.5, 0.0
+    voice.reverb = 0.5, 0.5, 0.45, 0.5, 0.0
     # voice.chord = C3
 
 steps = [   (C3, D3),
             (G3, A3),
             (D4, E4),
-            (A4, B4)
+            (A4, B4),
+            (E5, F5),
+            (G5, A5)
             ]    
 
 DURATION = 20 * 60.0
@@ -52,7 +58,7 @@ for n, note in enumerate(notes):
     # step = v * 2 if note[2] else (v * 2) + 1
     step = steps[v][note[2]]
     voices[v].pan = 1.0 if note[2] else 0.0
-    voices[v].play(step)
+    voices[v].play(step, 1.0)
     if n == len(notes) - 1:
         continue
     while t < notes[n+1][0] * DURATION:

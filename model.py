@@ -19,7 +19,9 @@ def init():
         db.execute("CREATE TABLE sequence (walk_id INTEGER, t INTEGER, foot TEXT)")
         db.execute("CREATE INDEX sequence_walk_id ON sequence(walk_id)")
     except Exception as e:
-        if not "already exists" in e.message:
+        if hasattr(e, 'message'):
+            e = e.message
+        if "already exists" not in str(e):
             raise e
     connection.commit()
 init()
