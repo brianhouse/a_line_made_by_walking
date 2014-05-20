@@ -6,8 +6,6 @@ from housepy import config, log
 connection = sqlite3.connect("walk_data.db")
 connection.row_factory = sqlite3.Row
 db = connection.cursor()
-# what's the danger of the connection closing accidentally? I dont think much
-# and tornado is single threaded, so commits should be fine
 
 def init():
     try:
@@ -59,8 +57,11 @@ def fetch_geo(walk_id):
     rows = [dict(gd) for gd in db.fetchall()]
     return rows
 
-def fetch_sequence(walk_id):
-    db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
+def fetch_sequence(walk_id=None):
+    if walk_id is None:
+        db.execute("SELECT * FROM sequence ORDER BY t DESC LIMIT 1", (walk_id,))
+    else:
+        db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
     sequence = [(step['t'], step['foot']) for step in db.fetchall()]
     return sequence
 

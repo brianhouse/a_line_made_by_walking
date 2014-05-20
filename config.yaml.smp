@@ -3,7 +3,7 @@ log: False
 
 live: False
 
-tornado:
+server:
     port: 2222
     log_templates: False
 

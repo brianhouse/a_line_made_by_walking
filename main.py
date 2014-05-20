@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 import os, json, model
-from housepy import config, log, strings, tornado_server
+from housepy import config, log, strings, server
 from housepy import process as pc
 from process import process_walk
 
 pc.secure_pid(os.path.join(os.path.dirname(__file__), "run"))
 
 
-class Home(tornado_server.Handler):
+class Home(server.Handler):
 
     def get(self, page=None, walk_id=None):
         log.info("Home.get %s" % page)
@@ -41,7 +41,7 @@ class Home(tornado_server.Handler):
         return self.text("OK")
 
 
-class Sequence(tornado_server.Handler):
+class Sequence(server.Handler):
 
     def get(self, walk_id=None):
         log.info("Sequence.get %s" % walk_id)
@@ -54,7 +54,7 @@ def main():
         (r"/sequence/?([^/]*)", Sequence),    
         (r"/?([^/]*)/?([^/]*)", Home),
     ]
-    tornado_server.start(handlers)      
+    server.start(handlers)      
                      
 if __name__ == "__main__":
     main()
