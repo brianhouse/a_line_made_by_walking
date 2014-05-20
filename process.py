@@ -62,7 +62,7 @@ def process_walk(walk_id, force=False):
 
     # low-pass filter
     ds = sp.smooth(ds, 300)
-    ds = sp.normalize(ds)
+    # ds = sp.normalize(ds)
     av = np.average(ds)
 
     # detect peaks
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         for walk in walks:
             process_walk(walk['id'], force)
     else:
-        process_walk(walk_id)
+        process_walk(walk_id, force)
 
 
 
