@@ -1,1 +1,1 @@
-ssh -i scripts/footfollow.pem ubuntu@54.225.193.43
+ssh -i scripts/lonely_ghosts.pem ubuntu@54.235.200.47

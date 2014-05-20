@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, json, model
 from housepy import config, log, strings, tornado_server
