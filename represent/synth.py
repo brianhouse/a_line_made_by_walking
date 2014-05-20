@@ -31,8 +31,8 @@ notes = [(onsets[i], note[1], note[2]) for (i, note) in enumerate(notes)]
 
 
 for voice in voices:
-    # voice.synth = 'cycle'
-    voice.synth = 'rect'
+    voice.synth = 'cycle'
+    # voice.synth = 'rect'
     voice.attack = 350
     # voice.sustain = 350
     voice.sustain = 2000
