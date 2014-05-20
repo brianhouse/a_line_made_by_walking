@@ -32,12 +32,12 @@ class Home(server.Handler):
         if not len(data['accel_data']):
             return self.error("NO DATA")
         walk_id = model.insert_walk(data)
-        # log.info("Processing data...")
-        # try:    
-        #     process_walk(walk_id)
-        # except Exception as e:
-        #     return self.error("Could not process: %s" % log.exc(e))
-        # log.info("--> done")
+        log.info("Processing data...")
+        try:    
+            process_walk(walk_id)
+        except Exception as e:
+            return self.error("Could not process: %s" % log.exc(e))
+        log.info("--> done")
         return self.text("OK")
 
 

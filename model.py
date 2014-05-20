@@ -73,6 +73,7 @@ def fetch_accels(walk_id):
 def process_check(walk_id):
     db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
     return len(db.fetchall()) == 0
-    
 
-
+def remove_sequence(walk_id):
+    db.execute("DELETE FROM sequence WHERE walk_id=?", (walk_id,))
+    connection.commit()

@@ -5,11 +5,16 @@ import numpy as np
 import signal_processing as sp
 from housepy import log, config
 
-def process_walk(walk_id):
+def process_walk(walk_id, force=False):
 
-    if not model.process_check(walk_id):
-        log.error("Walk already processed")
-        return
+    if not model.process_check(walk_id):                        ### switch this back
+        log.error("Walk %s already processed" % walk_id)        
+        if force:
+            log.info("--> forcing...")
+            model.remove_sequence(walk_id)
+        else:
+            return
+    log.info("Processing walk %s" % walk_id)
 
     data = model.fetch_accels(walk_id)
     data = [(reading['t'], reading['x'], reading['y'], reading['z']) for reading in data]
@@ -108,7 +113,7 @@ def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples):
         return
 
     # plot
-    ctx = drawing.Context(50000, 600, relative=True, flip=True)
+    ctx = drawing.Context(5000, 600, relative=True, flip=True)
     ctx.line(200.0 / total_samples, 0.5, 350.0 / total_samples, 0.5, thickness=10.0)
     ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.5))
     ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
@@ -122,17 +127,17 @@ def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples):
         x, y = valley
         x = float(x) / total_samples
         ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
-    ctx.image.save("charts/steps_%s_%s.png" % (walk_id, int(time.time())), "PNG")
-    if __name__ == "__main__":
-        ctx.show()
+    ctx.output("charts/steps_%s_%s.png" % (walk_id, int(time.time())))
 
 
 if __name__ == "__main__":
     walk_id = sys.argv[1]
+    force = True if len(sys.argv) > 2 and sys.argv[2][0] == "f" else False
     if walk_id == "all":
         walks = model.fetch_walks()
+        log.info("Total walks: %s" % len(walks))
         for walk in walks:
-            process_walk(walk['id'])
+            process_walk(walk['id'], force)
     else:
         process_walk(walk_id)
 
