@@ -42,9 +42,9 @@ def process_walk(walk_id, force=False):
 
     # # for testing
     # log.debug(total_samples)
-    # xs = xs[(30 * 1000):(40 * 1000)]
-    # ys = ys[(30 * 1000):(40 * 1000)]
-    # zs = zs[(30 * 1000):(40 * 1000)]
+    # xs = xs[(30 * 1000):(50 * 1000)]
+    # ys = ys[(30 * 1000):(50 * 1000)]
+    # zs = zs[(30 * 1000):(50 * 1000)]
     # total_samples = len(xs)
     # log.debug(total_samples)
 
@@ -63,11 +63,11 @@ def process_walk(walk_id, force=False):
     # low-pass filter
     ds = sp.smooth(ds, 300)
     # ds = sp.normalize(ds)
-    av = np.average(ds)
+    # av = np.average(ds)
 
     # detect peaks
     # lookahead should be the minimum time of a step, maybe .3s, 300ms
-    peaks, valleys = sp.detect_peaks(ds, lookahead=150, delta=0.15)
+    peaks, valleys = sp.detect_peaks(ds, lookahead=150, delta=0.12)
     if len(peaks) and peaks[0][0] == 0:
         peaks = peaks[1:]
     peaks = np.array(peaks)
@@ -92,19 +92,27 @@ def process_walk(walk_id, force=False):
     valleys = [(valley[0] - start, valley[1]) for valley in valleys]
     total_samples -= start
 
+    # get foot separator line
+    fxs = [peak[0] for peak in peaks]
+    fys = [peak[1] for peak in peaks]
+    avs = np.average([peak[1] for peak in peaks])
+    fxs.append(total_samples-1)
+    fys.append(avs)
+    fs = sp.resample(fxs, fys, total_samples)
+    fs = sp.smooth(fs, 3000)
+
     # print out
     log.info("Saving sequence (%s)..." % walk_id)
-    ## will have to change this to real right/lefts
     sequence = []
     for p, peak in enumerate(peaks):
-        foot = 'left' if p % 2 == 0 else 'right'
+        foot = 'right' if peak[1] > fs[peak[0]] else 'left'
         sequence.append((peak[0], foot))
     model.insert_sequence(walk_id, sequence)
 
-    plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples)
+    plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples, fs)
 
 
-def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples):
+def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples, fs):
 
     try:
         from housepy import drawing
@@ -119,14 +127,15 @@ def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples):
     ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
     ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.5))
     ctx.line([(float(i) / total_samples, d) for (i, d) in enumerate(ds)], stroke=(0., 0., 0.), thickness=2.0)
+    ctx.line([(float(i) / total_samples, f) for (i, f) in enumerate(fs)], stroke=(1., 0., 1.), thickness=5.0)
     for peak in peaks:
         x, y = peak
         x = float(x) / total_samples
-        ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(1., 0., 0.), thickness=0.0)
+        ctx.arc(x, y, (50.0 / ctx.width), (50.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)
     for valley in valleys:
         x, y = valley
         x = float(x) / total_samples
-        ctx.arc(x, y, (1.0 / ctx.width) * 10, (1.0 / ctx.height) * 10, fill=(0., 0., 1.), thickness=0.0)
+        ctx.arc(x, y, (50.0 / ctx.width), (50.0 / ctx.height), fill=(0., 0., 1.), thickness=0.0)
     ctx.output("charts/steps_%s_%s.png" % (walk_id, int(time.time())))
 
 
@@ -141,12 +150,4 @@ if __name__ == "__main__":
     else:
         process_walk(walk_id, force)
 
-
-
-
-# ## other ideas
-
-# # find 'jerks'
-# dr = science.derivative(ds)
-# dr = sp.normalize(dr)
 
