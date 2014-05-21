@@ -63,6 +63,7 @@ function startWalk () {
     console.log("startWalk");
     playSound('left', 0, 0.0, 0.0); // iOS needs this
     playSound('right', 0, 0.0, 0.0); // iOS needs this
+    setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min    
     setTimeout(startRecording, 3820 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
     startAudio();
 }
@@ -154,7 +155,7 @@ $(document).ready(function () {
     }            
     loadSound('left', "/static/snd/left.wav");
     loadSound('right', "/static/snd/right.wav");                
-   loadSound('countdown', "/static/snd/countdown.wav");
+    loadSound('countdown', "/static/snd/countdown.wav");
     $('#start_btn').click(function () {
         $('#title').html("Walking...");
         $('#text').hide();
@@ -164,16 +165,8 @@ $(document).ready(function () {
         $('#start_btn').click(function () {
             stopWalk();
         });
-       window.ondeviceorientation = function(event) { };            
         startWalk();        
     });
     $('#compass_holder').hide();
-   window.ondeviceorientation = function (e) {
-       if (e.webkitCompassHeading != undefined) {
-           $('#compass_holder').show();
-           $('#compass').rotate(-1 * (e.webkitCompassHeading + window.orientation) + 100); // manhattan east
-       }
-    }
-    setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min
 });
 

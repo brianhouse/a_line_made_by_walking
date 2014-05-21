@@ -9,7 +9,7 @@ db = connection.cursor()
 
 def init():
     try:
-        db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER)")
+        db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER, ref INTEGER)")
         db.execute("CREATE TABLE geo_data (walk_id INTEGER, t INTEGER, lat REAL, lng REAL)")
         db.execute("CREATE INDEX geo_data_walk_id ON geo_data(walk_id)")
         db.execute("CREATE TABLE accel_data (walk_id INTEGER, t INTEGER, x REAL, y REAL, z REAL)")
@@ -48,8 +48,9 @@ def insert_sequence(walk_id, sequence):
     connection.commit()
 
 def fetch_walks():
-    db.execute("SELECT * FROM walks")
+    db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time DESC")
     rows = [dict(gd) for gd in db.fetchall()]
+    print(rows)
     return rows    
 
 def fetch_geo(walk_id):

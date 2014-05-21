@@ -1,0 +1,42 @@
+{% extends "page.html" %}
+
+{% block head %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#chose_walk").click(function () {
+                var value = $('#walk option:selected').val();
+                document.location = "/walk/" + value;
+            });
+        });
+    </script>
+{% endblock head %}
+
+{% block body %}
+
+    <div class="instructions">
+        <h2>
+            <span id="title" class="title">Choose</span>
+        </h2>
+        <h3 id="pocket"></h3>
+        Choose a previous walk to listen to, or none at all.<br />
+        <br />
+        <select id="walk">                
+        {% for walk in walks %}
+            <option value="{{ walk.id }}">({{ walk.id }}) {{ (walk.duration // 1000) | format_time }}</option>
+        {% endfor %}
+        <option value="">NONE</option>
+        </select>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />            
+        <br />
+        <br />
+        <a id="chose_walk" class="arrow" href="#">&rarr;</a>        
+    </div>
+
+{% endblock body %}

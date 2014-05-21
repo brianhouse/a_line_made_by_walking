@@ -1,5 +1,7 @@
 ### todo
 
+- should be able to pick a walk, with distance, duration, and previous walk referenced. last walk is chosen by default.
+
 In code, this should just be any walk, any time.
 - intro
 - prepare

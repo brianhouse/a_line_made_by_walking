@@ -12,12 +12,12 @@ class Home(server.Handler):
 
     def get(self, page=None, walk_id=None):
         log.info("Home.get %s" % page)
-        if not config['live']:
-            return self.render("placeholder.html")
         if not len(page):
             return self.render("home.html")        
         if page == "walk":
-            return self.render("walk.html", sequence=json.dumps(model.fetch_sequence())) 
+            return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id))) 
+        if page == "choose":
+            return self.render("choose.html", walks=model.fetch_walks()) 
         if page in ["prepare", "route", "map", "thanks"]:
             return self.render("%s.html" % page)
         return self.not_found()

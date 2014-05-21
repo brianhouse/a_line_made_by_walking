@@ -1,8 +1,6 @@
 tail: True
 log: False
 
-live: False
-
 server:
     port: 2222
     log_templates: False
