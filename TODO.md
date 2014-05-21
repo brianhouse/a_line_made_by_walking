@@ -1,6 +1,22 @@
 ### todo
 
-- set domain (needs to propagate)
+In code, this should just be any walk, any time.
+- intro
+- prepare
+- start/stop
+- thanks
+
+In documentation:
+- show my hands, looking at phone, setting up
+- me walking hearing one track
+- me hearing more tracks
+- shift scenes, multi-tracks
+- show Tala's hands, looking at phone, setting up
+- same thing
+- then more hands, more hands
+
+
+so do need some design
 
 ### bugs
 
