@@ -48,9 +48,12 @@ def insert_sequence(walk_id, sequence):
     connection.commit()
 
 def fetch_walks():
-    db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time DESC")
-    rows = [dict(gd) for gd in db.fetchall()]
-    print(rows)
+    try:
+        db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time DESC")
+        rows = [dict(gd) for gd in db.fetchall()]
+    except Exception as e:
+        log.error(log.exc(e))
+        rows = []
     return rows    
 
 def fetch_geo(walk_id):
