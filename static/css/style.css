@@ -54,9 +54,11 @@ body, html {
         font-size: 40px;
         text-decoration: none;
         display: block;
-        background-color: #666;
+        background-color: #999;
         padding: 10px;
+        padding-right: 15px;
         width: 100px;
+        text-align: center;
     }
         .instructions a#start_btn:hover {
             background-color: black;
@@ -74,10 +76,11 @@ body, html {
         }
 
 #readings {
-    top: 261px;
+    position: absolute;
+    top: 120px;
+    left: 10px;
     width: 200px;
     color: black;
     font-family: monospace;
     font-size: 12px;
-    margin: auto;
 }

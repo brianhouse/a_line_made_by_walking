@@ -79,7 +79,7 @@ function startAudio () {
 }
 
 function queueAudio () {
-    console.log("queueAudio " + sequence.length);
+    // console.log("queueAudio " + sequence.length);
     // schedule notes from the queue that are happening in the next 10s or so
     do {
         if (sequence.length == 0) {
@@ -159,7 +159,7 @@ $(document).ready(function () {
     loadSound('countdown', "/static/snd/countdown.wav");
     $('#start_btn').click(function () {
         $('#title').html("Walking...");
-        $('#text').hide();
+        $('#text').html("<br /><br /><br /><br /><br /><br /><br /><br /><br /><br />");
         $('#pocket').html("(phone in pocket)");
         $('#start_btn').html("STOP");
         $('#start_btn').unbind("click");
