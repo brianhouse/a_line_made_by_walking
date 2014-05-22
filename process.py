@@ -7,7 +7,7 @@ from housepy import log, config
 
 def process_walk(walk_id, force=False):
 
-    if not model.process_check(walk_id):                        ### switch this back
+    if not model.process_check(walk_id):
         log.error("Walk %s already processed" % walk_id)        
         if force:
             log.info("--> forcing...")
@@ -67,7 +67,7 @@ def process_walk(walk_id, force=False):
 
     # detect peaks
     # lookahead should be the minimum time of a step, maybe .3s, 300ms
-    peaks, valleys = sp.detect_peaks(ds, lookahead=150, delta=0.12)
+    peaks, valleys = sp.detect_peaks(ds, lookahead=150, delta=0.10)
     if len(peaks) and peaks[0][0] == 0:
         peaks = peaks[1:]
     peaks = np.array(peaks)
