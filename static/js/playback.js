@@ -8,6 +8,7 @@ var accel_data = [];
 var geo_data = [];
 var start_time = null;
 var stop_time = null;
+var ref_id = null;
 var geo_interval = null;
 var sequence_interval = null;
 
@@ -127,7 +128,7 @@ function sendWalk () {
     if (start_time == null) {
         duration == null;
     }
-    var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration};
+    var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration, 'ref_id': ref_id};
     walk_data = JSON.stringify(walk_data);            
     $.ajax({
         type: 'POST',

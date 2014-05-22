@@ -9,7 +9,7 @@ db = connection.cursor()
 
 def init():
     try:
-        db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER, ref INTEGER)")
+        db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER, ref_id INTEGER)")
         db.execute("CREATE TABLE geo_data (walk_id INTEGER, t INTEGER, lat REAL, lng REAL)")
         db.execute("CREATE INDEX geo_data_walk_id ON geo_data(walk_id)")
         db.execute("CREATE TABLE accel_data (walk_id INTEGER, t INTEGER, x REAL, y REAL, z REAL)")
@@ -26,7 +26,7 @@ init()
 
 def insert_walk(walk):
     try:
-        db.execute("INSERT INTO walks (start_time, duration) VALUES (?, ?)", (walk['start_time'], walk['duration']))
+        db.execute("INSERT INTO walks (start_time, duration, ref_id) VALUES (?, ?, ?)", (walk['start_time'], walk['duration'], walk['ref_id']))
         walk_id = db.lastrowid    
         for gd in walk['geo_data']:
             db.execute("INSERT INTO geo_data (walk_id, t, lat, lng) VALUES (?, ?, ?, ?)", (walk_id, gd[0], gd[1], gd[2]))
