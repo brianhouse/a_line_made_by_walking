@@ -3,7 +3,7 @@
 import sqlite3, json
 from housepy import config, log
 
-connection = sqlite3.connect("walk_data.db")
+connection = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), "walk_data.db")))
 connection.row_factory = sqlite3.Row
 db = connection.cursor()
 

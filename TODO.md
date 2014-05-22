@@ -12,10 +12,12 @@ In documentation:
 - show my hands, looking at phone, setting up
 - me walking hearing one track
 - me hearing more tracks
-- shift scenes, multi-tracks
+- fade in layered video
+- fade shift scenes, multi-tracks
 - show Tala's hands, looking at phone, setting up
 - same thing
 - then more hands, more hands
+- shot of someone doing it, and stumbling
 
 
 so do need some design
