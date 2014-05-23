@@ -4,10 +4,20 @@ import os, sys, time
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import model
 import numpy as np
-from housepy import config, log, science, drawing
+from housepy import config, log, drawing, geo, util
 
-walks = model.fetch_walks()
-walks = [walk for walk in walks if walk['id'] >= config['walk_id']]
+MIN_STEPS = 50
+
+walk_data = model.fetch_walks(desc=False)
+# walk_data = [walk for walk in walks if walk['id'] >= config['walk_id']]
+
+walks = []
+for walk in walk_data:
+    sequence = model.fetch_sequence(walk['id'])
+    if len(sequence) < MIN_STEPS:
+        continue
+    walks.append(walk)
+
 
 LON = 0
 LAT = 1
@@ -19,7 +29,7 @@ for walk in walks:
     points = model.fetch_geo(walk['id'])
     points = np.array([(point['lng'], point['lat'], None, None) for point in points])
     for point in points:
-        point[X], point[Y] = science.geo_project((point[LON], point[LAT]))
+        point[X], point[Y] = geo.project((point[LON], point[LAT]))
     walk['points'] = points
     all_points.extend(points)
 all_points = np.array(all_points)
@@ -38,20 +48,22 @@ print(ratio)
 points = list(points)
 for walk in walks:
     for point in walk['points']:
-        point[X] = science.scale(point[X], min_x, max_x)
-        point[Y] = science.scale(point[Y], min_y, max_y)
+        point[X] = util.scale(point[X], min_x, max_x)
+        point[Y] = util.scale(point[Y], min_y, max_y)
 
 
 
-ctx = drawing.Context(1000, int(1000.0/ratio), relative=True, flip=True, hsv=True, margin=20)
+ctx = drawing.Context(1000, int(1000.0/ratio), relative=True, flip=True, hsv=True, margin=20, background=(252/256, 245/256, 216/256))
 
 for w, walk in enumerate(walks):
     c = float(w) / len(walks)
     points = [(point[X], point[Y]) for point in walk['points']]
-    ctx.line(points, thickness=3.0, stroke=(0.55, 1.0, c))
+    # ctx.line(points, thickness=3.0, stroke=(0.55, 1.0, c))
+    # ctx.line(points, thickness=3.0, stroke=(0.55, 0.0, c))    
+    # ctx.line(points, thickness=5.0, stroke=(0.55, 1.0, 0.7, 0.4))
+    ctx.line(points, thickness=5.0, stroke=(0.55, 0.0, 0.0, 0.4))
       
-ctx.show()
-ctx.image.save("charts/geo_%s.png" % int(time.time()), "PNG")
+ctx.output("charts/geo_%s.png" % int(time.time()))
 
 
 

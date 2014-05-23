@@ -8,7 +8,9 @@ In code, this should just be any walk, any time.
 - start/stop
 - thanks
 
+
 In documentation:
+- opens with the nonsequitur of me and/or jane walking?
 - show my hands, looking at phone, setting up
 - me walking hearing one track
 - me hearing more tracks
@@ -18,6 +20,12 @@ In documentation:
 - same thing
 - then more hands, more hands
 - shot of someone doing it, and stumbling
+
+
+tomorow:
+- need me on wick, maybe 2
+- need jane on wick
+- us on the wall
 
 
 so do need some design

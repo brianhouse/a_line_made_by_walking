@@ -6,26 +6,19 @@ import json, time, random, model
 import signal_processing as sp
 from housepy import log, config, drawing
 
+MIN_STEPS = 50
 
-# ctx = drawing.Context(3000, 500, margin=50, background=(252/256, 245/256, 216/256))
-
-# ctx.line(0.0, 0.0, 1.0, 1.0, thickness=5)
-# ctx.line(0.0, 1.0, 1.0, 0.0, thickness=5)
-
-# ctx.arc(0.5, 0.5, radius_y=0.1, start=0, end=270, thickness=5, fill=(1., 1., 1.))
-
-# ctx.output()
-
-# exit()
-
-walks = model.fetch_walks()
+walks = model.fetch_walks(desc=False)
 # walks = [walk for walk in walks if walk['id'] >= config['walk_id']]
 # walks = [walk for walk in walks if walk['id'] == 1]
 
 notes = []
 v = 0
 for walk in walks:
-    for step in model.fetch_sequence(walk['id']):
+    sequence = model.fetch_sequence(walk['id'])
+    if len(sequence) < MIN_STEPS:
+        continue
+    for step in sequence:
         notes.append((step[0], v, 0 if step[1] == 'left' else 1))
     v += 1
 
@@ -39,7 +32,7 @@ notes = [(onsets[i], note[1], note[2]) for (i, note) in enumerate(notes)]
 
 # print(notes)
 
-ctx = drawing.Context(30000, 500, margin=75, background=(252/256, 245/256, 216/256))
+ctx = drawing.Context(30000, 2000, margin=75, background=(252/256, 245/256, 216/256))
 ctx.line(0.0, 0.0, 1.0, 0.0, thickness=5)
 ctx.line(0.0, 0.0, 0.0, 1.0, thickness=5)
 

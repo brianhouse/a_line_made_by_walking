@@ -47,9 +47,9 @@ def insert_sequence(walk_id, sequence):
         return None
     connection.commit()
 
-def fetch_walks():
+def fetch_walks(desc=True):
     try:
-        db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time DESC")
+        db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time %s" % ("DESC" if desc else ""))
         rows = [dict(gd) for gd in db.fetchall()]
     except Exception as e:
         log.error(log.exc(e))
