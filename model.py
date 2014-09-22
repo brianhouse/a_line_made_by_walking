@@ -3,11 +3,19 @@
 import sqlite3, json, os
 from housepy import config, log
 
-connection = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), "walk_data.db")))
-connection.row_factory = sqlite3.Row
-db = connection.cursor()
+def db_call(f):
+    def wrapper(*args):
+        connection = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), "data.db")))
+        connection.row_factory = sqlite3.Row
+        db = connection.cursor()
+        results = f(db, *args)
+        connection.commit()
+        connection.close()
+        return results
+    return wrapper
 
-def init():
+@db_call
+def init(db):
     try:
         db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER, ref_id INTEGER)")
         db.execute("CREATE TABLE geo_data (walk_id INTEGER, t INTEGER, lat REAL, lng REAL)")
@@ -21,10 +29,10 @@ def init():
             e = e.message
         if "already exists" not in str(e):
             raise e
-    connection.commit()
 init()
 
-def insert_walk(walk):
+@db_call
+def insert_walk(db, walk):
     try:
         db.execute("INSERT INTO walks (start_time, duration, ref_id) VALUES (?, ?, ?)", (walk['start_time'], walk['duration'], walk['ref_id']))
         walk_id = db.lastrowid    
@@ -35,10 +43,10 @@ def insert_walk(walk):
     except Exception as e:
         log.error(log.exc(e))
         return None
-    connection.commit()
     return walk_id
 
-def insert_sequence(walk_id, sequence):
+@db_call
+def insert_sequence(db, walk_id, sequence):
     try:
         for step in sequence:
             db.execute("INSERT INTO sequence (walk_id, t, foot) VALUES (?, ?, ?)", (walk_id, int(step[0]), step[1]))
@@ -47,6 +55,7 @@ def insert_sequence(walk_id, sequence):
         return None
     connection.commit()
 
+@db_call
 def fetch_walks(desc=True):
     try:
         db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time %s" % ("DESC" if desc else ""))
@@ -56,11 +65,13 @@ def fetch_walks(desc=True):
         rows = []
     return rows    
 
+@db_call
 def fetch_geo(walk_id):
     db.execute("SELECT * FROM geo_data WHERE walk_id=?", (walk_id,))
     rows = [dict(gd) for gd in db.fetchall()]
     return rows
 
+@db_call
 def fetch_sequence(walk_id=None):    
     if walk_id is None:
         db.execute("SELECT id FROM walks ORDER BY start_time DESC LIMIT 1")
@@ -75,15 +86,17 @@ def fetch_sequence(walk_id=None):
         log.info("--> no data retrieved for walk %s" % walk_id)
     return sequence
 
+@db_call
 def fetch_accels(walk_id):
     db.execute("SELECT * FROM accel_data WHERE walk_id=?", (walk_id,))
     rows = [dict(reading) for reading in db.fetchall()]
     return rows
 
+@db_call
 def process_check(walk_id):
     db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
     return len(db.fetchall()) == 0
 
+@db_call
 def remove_sequence(walk_id):
     db.execute("DELETE FROM sequence WHERE walk_id=?", (walk_id,))
-    connection.commit()
