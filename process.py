@@ -24,95 +24,88 @@ def process_walk(walk_id, force=False):
     data = np.array(data)
     # log.debug(data)
     ts = data[:,0]
-    total_samples = ts[-1]
-    log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
+    total_samples = int(ts[-1])
+
+    if total_samples < 3500 + 5000: # need at least 5s of data
+        log.info("No footsteps detected")
+        return
 
     # resample the values
     xs = sp.resample(ts, data[:,1], total_samples)
     ys = sp.resample(ts, data[:,2], total_samples)
     zs = sp.resample(ts, data[:,3], total_samples)
 
-    # skip 0.5s for intro
-    skip = 500
-    xs = xs[skip:]
-    ys = ys[skip:]
-    zs = zs[skip:]
-    total_samples -= skip
+    # skip 0.5s for accelerometer startup, and 3s for phone out of pocket at end
+    skipin, skipout = 500, 3000
+    xs = xs[skipin:-skipout]
+    ys = ys[skipin:-skipout]
+    zs = zs[skipin:-skipout]
+    total_samples -= (skipin + skipout)
 
+    log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
 
-    # # for testing
-    # log.debug(total_samples)
-    # xs = xs[(30 * 1000):(50 * 1000)]
-    # ys = ys[(30 * 1000):(50 * 1000)]
-    # zs = zs[(30 * 1000):(50 * 1000)]
-    # total_samples = len(xs)
-    # log.debug(total_samples)
+    # get RMS
+    # assume up and down is never important
+    ds = np.sqrt((np.power(xs, 2) + np.power(zs, 2)) / 2)   
 
-
-    # get 3d vector
-    ds = np.sqrt(np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2))
-
-    # normalize the values to a given range (this is gs, I believe)
-    MIN = -20.0
-    MAX = 20.0
+    # normalize the other values to a given range (this is gs, I believe), just for display
+    MIN = -10.0
+    MAX = 10.0
     xs = (xs - MIN) / (MAX - MIN)
     ys = (ys - MIN) / (MAX - MIN)
     zs = (zs - MIN) / (MAX - MIN)
-    ds = (ds - MIN) / (MAX - MIN)
 
-    # low-pass filter
-    ds = sp.smooth(ds, 300)
-    # ds = sp.normalize(ds)
-    # av = np.average(ds)
+    # process the RMS
+    ds = sp.smooth(ds, 1000)
+    ds = sp.normalize(ds)
 
     # detect peaks
     # lookahead should be the minimum time of a step, maybe .3s, 300ms
-    peaks, valleys = sp.detect_peaks(ds, lookahead=150, delta=0.10)
+    peaks, valleys = sp.detect_peaks(ds, lookahead=300, delta=0.10)
     if len(peaks) and peaks[0][0] == 0:
         peaks = peaks[1:]
     peaks = np.array(peaks)
-    valleys = np.array(valleys)
+    valleys = np.array(valleys)[1:] # toss the first valley (always false)
     log.info("PEAKS %s" % len(peaks))
-    log.info("VALLEYS %s" % len(valleys))
 
-    if not (len(peaks) and len(valleys)):
+    if not len(peaks):
         log.info("No footsteps detected")
         return
 
-    peaks = valleys
+    rights = peaks[:,0]
+    lefts = []
+    for r in range(len(rights)):
+        if r == 0:
+            continue
+        lefts.append((rights[r-1] + rights[r]) / 2)
 
-    # start = np.min((np.min(peaks[:,0]), np.min(valleys[:,0])))
-    start = np.min(peaks[:,0])
-    log.debug("START %s" % start)
-    xs = xs[start:]
-    ys = ys[start:]
-    zs = zs[start:]
-    ds = ds[start:]
-    peaks = [(peak[0] - start, peak[1]) for peak in peaks]
-    valleys = [(valley[0] - start, valley[1]) for valley in valleys]
-    total_samples -= start
+    # autocorrelate to verify
 
-    # get foot separator line
-    fxs = [peak[0] for peak in peaks]
-    fys = [peak[1] for peak in peaks]
-    avs = np.average([peak[1] for peak in peaks])
-    fxs.append(total_samples-1)
-    fys.append(avs)
-    fs = sp.resample(fxs, fys, total_samples)
-    fs = sp.smooth(fs, 3000)
+    # # adjust the start time to the first step
+    # start = int(np.min([np.min(peaks[:,0]), np.min(valleys[:,0])]))
+    # log.debug("START %s" % start)
+    # xs = xs[start:]
+    # ys = ys[start:]
+    # zs = zs[start:]
+    # ds = ds[start:]
+    # peaks = [(peak[0] - start, peak[1]) for peak in peaks]
+    # valleys = [(valley[0] - start, valley[1]) for valley in valleys]
+    # total_samples -= start
 
-    # print out
+    # save
     log.info("Saving sequence (%s)..." % walk_id)
     sequence = []
-    for p, peak in enumerate(peaks):
-        foot = 'right' if peak[1] > fs[peak[0]] else 'left'
-        sequence.append((peak[0], foot))
+    for r, right in enumerate(rights):
+        sequence.append((int(right), 'right'))
+    for l, left in enumerate(lefts):
+        sequence.append((int(left), 'left'))
+    sequence.sort(key=lambda s: s[0])
     model.insert_sequence(walk_id, sequence)
 
-    plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples, fs)
+    plot(walk_id, xs, ys, zs, ds, peaks, rights, lefts, total_samples)
 
 
-def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples, fs):
+def plot(walk_id, xs, ys, zs, ds, peaks, rights, lefts, total_samples):
 
     try:
         from housepy import drawing
@@ -127,15 +120,16 @@ def plot(walk_id, xs, ys, zs, ds, peaks, valleys, total_samples, fs):
     ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
     ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.5))
     ctx.line([(float(i) / total_samples, d) for (i, d) in enumerate(ds)], stroke=(0., 0., 0.), thickness=2.0)
-    ctx.line([(float(i) / total_samples, f) for (i, f) in enumerate(fs)], stroke=(1., 0., 1.), thickness=5.0)
     for peak in peaks:
         x, y = peak
         x = float(x) / total_samples
-        ctx.arc(x, y, (50.0 / ctx.width), (50.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)
-    for valley in valleys:
-        x, y = valley
-        x = float(x) / total_samples
-        ctx.arc(x, y, (50.0 / ctx.width), (50.0 / ctx.height), fill=(0., 0., 1.), thickness=0.0)
+        ctx.arc(x, y, (10.0 / ctx.width), (10.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)
+    for right in rights:
+        x = float(right) / total_samples
+        ctx.arc(x, 0.1, (10.0 / ctx.width), (10.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)        
+    for left in lefts:
+        x = float(left) / total_samples
+        ctx.arc(x, 0.1, (10.0 / ctx.width), (10.0 / ctx.height), fill=(0., 0., 1.), thickness=0.0)        
     ctx.output("charts/steps_%s_%s.png" % (walk_id, int(time.time())))
 
 

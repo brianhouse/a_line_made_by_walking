@@ -65,7 +65,7 @@ function startWalk () {
     playSound('left', 0, 0.0, 0.0); // iOS needs this
     playSound('right', 0, 0.0, 0.0); // iOS needs this
     setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min    
-    setTimeout(startRecording, 3820 - 500); // 4s for countoff, 0.5s for the accelerometer to get going
+    setTimeout(startRecording, 3820 - 500); // 3.82s for countoff, 0.5s for the accelerometer to get going (discard later)
     startAudio();
 }
 
@@ -100,8 +100,8 @@ function startRecording () {
     recording = true;
     getGeoLocation();    
     geo_interval = setInterval(getGeoLocation, 10000);
-    window.ondevicemotion = function(event) {
-        var d = [timestamp() - start_time, event.accelerationIncludingGravity.x, event.accelerationIncludingGravity.y, event.accelerationIncludingGravity.z];                
+    window.ondevicemotion = function(e) {
+        var d = [timestamp() - start_time, e.acceleration.x, e.acceleration.y, e.acceleration.z];                
         $('#display_x').html("x: " + d[1]);
         $('#display_y').html("y: " + d[2]);
         $('#display_z').html("z: " + d[3]);

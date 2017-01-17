@@ -4,7 +4,7 @@ import sqlite3, json, os
 from housepy import config, log
 
 def db_call(f):
-    def wrapper(*args):
+    def wrapper(*args, desc=False):
         connection = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), "data.db")))
         connection.row_factory = sqlite3.Row
         db = connection.cursor()
@@ -53,10 +53,9 @@ def insert_sequence(db, walk_id, sequence):
     except Exception as e:
         log.error(log.exc(e))
         return None
-    connection.commit()
 
 @db_call
-def fetch_walks(db, desc=True):
+def fetch_walks(db, desc=False):
     try:
         db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time %s" % ("DESC" if desc else ""))
         rows = [dict(gd) for gd in db.fetchall()]

@@ -1,12 +1,11 @@
+__pycache__
 .DS_Store
-*.pyc
+housepy
+signal_processing
+run
 dev
 logs
 config.yaml
 charts/*
 *.db
-signal_processing
-run
 *.pem
-braid
-housepy
