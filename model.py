@@ -56,7 +56,7 @@ def insert_sequence(db, walk_id, sequence):
     connection.commit()
 
 @db_call
-def fetch_walks(desc=True):
+def fetch_walks(db, desc=True):
     try:
         db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time %s" % ("DESC" if desc else ""))
         rows = [dict(gd) for gd in db.fetchall()]
@@ -66,13 +66,13 @@ def fetch_walks(desc=True):
     return rows    
 
 @db_call
-def fetch_geo(walk_id):
+def fetch_geo(db, walk_id):
     db.execute("SELECT * FROM geo_data WHERE walk_id=?", (walk_id,))
     rows = [dict(gd) for gd in db.fetchall()]
     return rows
 
 @db_call
-def fetch_sequence(walk_id=None):    
+def fetch_sequence(db, walk_id=None):    
     if walk_id is None:
         db.execute("SELECT id FROM walks ORDER BY start_time DESC LIMIT 1")
         walk = db.fetchone()
@@ -87,16 +87,16 @@ def fetch_sequence(walk_id=None):
     return sequence
 
 @db_call
-def fetch_accels(walk_id):
+def fetch_accels(db, walk_id):
     db.execute("SELECT * FROM accel_data WHERE walk_id=?", (walk_id,))
     rows = [dict(reading) for reading in db.fetchall()]
     return rows
 
 @db_call
-def process_check(walk_id):
+def process_check(db, walk_id):
     db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))
     return len(db.fetchall()) == 0
 
 @db_call
-def remove_sequence(walk_id):
+def remove_sequence(db, walk_id):
     db.execute("DELETE FROM sequence WHERE walk_id=?", (walk_id,))
