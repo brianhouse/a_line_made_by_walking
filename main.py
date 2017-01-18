@@ -18,7 +18,7 @@ class Home(server.Handler):
             return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id)), ref_id=walk_id if len(walk_id) else 0) 
         if page == "choose":
             return self.render("choose.html", walks=model.fetch_walks()) 
-        if page in ["prepare", "route", "map", "thanks"]:
+        if page in ["prepare", "route", "map", "thanks", "orientation"]:
             return self.render("%s.html" % page)
         return self.not_found()
 

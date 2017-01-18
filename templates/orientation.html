@@ -1,0 +1,77 @@
+{% extends "page.html" %}
+
+https://developer.mozilla.org/en-US/docs/Web/API/Detecting_device_orientation
+https://www.html5rocks.com/en/tutorials/device/orientation/
+
+{% block head %}
+    <script type="text/javascript">
+        console.log("Hello World!");
+
+        window.ondevicemotion = function(e) {
+            var d = [e.acceleration.x, e.acceleration.y, e.acceleration.z];                
+            $('#display_x').html("x: " + d[0]);
+            $('#display_y').html("y: " + d[1]);
+            $('#display_z').html("z: " + d[2]);
+        }
+
+        window.ondeviceorientation = function(e) {
+            var alpha = (e.alpha + 180) % 360;        // rotation around absolute z axis of the phone (compass) -> 0 to 360 (0 is North)
+            var beta = e.beta;  // rotation around absolute x axis, -180 to 180
+            var gamma = e.gamma; //(e.gamma + 90) * 2;   // rotation around the absolute  y axis -90 to 90
+
+
+            var d = [alpha, beta, gamma];    
+            $('#display_alpha').html("compass:<br />" + d[0]);
+            $('#display_beta').html("front-tilt:<br />" + d[1]);
+            $('#display_gamma').html("side-tilt:<br />" + d[2]);
+
+            $('#arrow_alpha').css({
+                "-webkit-transform": "rotate(" + alpha + "deg)",
+                "-moz-transform": "rotate(" + alpha + "deg)",
+                "transform": "rotate(" + alpha + "deg)" /* For modern browsers(CSS3)  */
+            });
+
+            $('#arrow_beta').css({
+                "-webkit-transform": "rotate(" + beta + "deg)",
+                "-moz-transform": "rotate(" + beta + "deg)",
+                "transform": "rotate(" + beta + "deg)" /* For modern browsers(CSS3)  */
+            });
+
+            $('#arrow_gamma').css({
+                "-webkit-transform": "rotate(" + gamma + "deg)",
+                "-moz-transform": "rotate(" + gamma + "deg)",
+                "transform": "rotate(" + gamma + "deg)" /* For modern browsers(CSS3)  */
+            });            
+        }
+
+    </script>
+{% endblock head %}
+
+{% block body %}
+
+    <div class="instructions">
+    Orientation test
+    </div>
+    <div id="readings">
+        <span id="display_x">x</span><br />
+        <span id="display_y">y</span><br />
+        <span id="display_z">z</span><br />
+        <br />
+        <span id="display_alpha">compass</span><br />
+        <div style="text-align: center">
+            <img id="arrow_alpha" style="width: 25px; height: 25px; margin: auto; background-color: black;" src="/static/img/compass.png" />
+        </div>
+        <br />    
+        <span id="display_beta">front-tilt</span><br />
+        <div style="text-align: center">
+            <img id="arrow_beta" style="width: 25px; height: 25px; margin: auto; background-color: black;" src="/static/img/compass.png" />
+        </div>
+        <br />    
+        <span id="display_gamma">side-tilt</span><br />        
+        <div style="text-align: center">
+            <img id="arrow_gamma" style="width: 25px; height: 25px; margin: auto; background-color: black;" src="/static/img/compass.png" />
+        </div>
+        <br />            
+    </div>    
+
+{% endblock body %}

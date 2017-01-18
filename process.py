@@ -44,16 +44,23 @@ def process_walk(walk_id, force=False):
 
     log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
 
-    # get RMS
-    # assume up and down is never important
-    ds = np.sqrt((np.power(xs, 2) + np.power(zs, 2)) / 2)   
-
-    # normalize the other values to a given range (this is gs, I believe), just for display
+    # normalize the values to a given range (this is gs, I believe)
     MIN = -10.0
     MAX = 10.0
     xs = (xs - MIN) / (MAX - MIN)
     ys = (ys - MIN) / (MAX - MIN)
     zs = (zs - MIN) / (MAX - MIN)
+
+    # smooth them
+    xs = sp.smooth(xs, 300)
+    ys = sp.smooth(ys, 300)
+    zs = sp.smooth(zs, 300)
+
+    # get RMS
+    # # assume up and down is never important
+    # ds = np.sqrt((np.power(xs, 2) + np.power(zs, 2)) / 2)   
+    ds = np.sqrt((np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2)) / 3)   
+
 
     # process the RMS
     ds = sp.smooth(ds, 1000)
@@ -116,20 +123,20 @@ def plot(walk_id, xs, ys, zs, ds, peaks, rights, lefts, total_samples):
     # plot
     ctx = drawing.Context(5000, 600, relative=True, flip=True)
     ctx.line(200.0 / total_samples, 0.5, 350.0 / total_samples, 0.5, thickness=10.0)
-    ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 0.5))
-    ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 0.5))
-    ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 0.5))
-    ctx.line([(float(i) / total_samples, d) for (i, d) in enumerate(ds)], stroke=(0., 0., 0.), thickness=2.0)
-    for peak in peaks:
-        x, y = peak
-        x = float(x) / total_samples
-        ctx.arc(x, y, (10.0 / ctx.width), (10.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)
-    for right in rights:
-        x = float(right) / total_samples
-        ctx.arc(x, 0.1, (10.0 / ctx.width), (10.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)        
-    for left in lefts:
-        x = float(left) / total_samples
-        ctx.arc(x, 0.1, (10.0 / ctx.width), (10.0 / ctx.height), fill=(0., 0., 1.), thickness=0.0)        
+    ctx.line([(float(i) / total_samples, x) for (i, x) in enumerate(xs)], stroke=(1., 0., 0., 1.0))
+    ctx.line([(float(i) / total_samples, y) for (i, y) in enumerate(ys)], stroke=(0., 1., 0., 1.0))
+    ctx.line([(float(i) / total_samples, z) for (i, z) in enumerate(zs)], stroke=(0., 0., 1., 1.0))
+    ctx.line([(float(i) / total_samples, d) for (i, d) in enumerate(ds)], stroke=(0., 0., 0.), thickness=3.0)
+    # for peak in peaks:
+    #     x, y = peak
+    #     x = float(x) / total_samples
+    #     ctx.arc(x, y, (10.0 / ctx.width), (10.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)
+    # for right in rights:
+    #     x = float(right) / total_samples
+    #     ctx.arc(x, 0.1, (10.0 / ctx.width), (10.0 / ctx.height), fill=(1., 0., 0.), thickness=0.0)        
+    # for left in lefts:
+    #     x = float(left) / total_samples
+    #     ctx.arc(x, 0.1, (10.0 / ctx.width), (10.0 / ctx.height), fill=(0., 0., 1.), thickness=0.0)        
     ctx.output("charts/steps_%s_%s.png" % (walk_id, int(time.time())))
 
 
