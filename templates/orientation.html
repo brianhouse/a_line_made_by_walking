@@ -7,6 +7,12 @@ https://www.html5rocks.com/en/tutorials/device/orientation/
     <script type="text/javascript">
         console.log("Hello World!");
 
+        if (window.DeviceOrientationEvent) {
+            alert("DeviceOrientation is supported");
+        } else {
+            alert("DeviceOrientation is not supported");
+        }   
+
         window.ondevicemotion = function(e) {
             var d = [e.acceleration.x, e.acceleration.y, e.acceleration.z];                
             $('#display_x').html("x: " + d[0]);
@@ -15,15 +21,25 @@ https://www.html5rocks.com/en/tutorials/device/orientation/
         }
 
         window.ondeviceorientation = function(e) {
-            var alpha = (e.alpha + 180) % 360;        // rotation around absolute z axis of the phone (compass) -> 0 to 360 (0 is North)
-            var beta = e.beta;  // rotation around absolute x axis, -180 to 180
-            var gamma = e.gamma; //(e.gamma + 90) * 2;   // rotation around the absolute  y axis -90 to 90
+
+            // this is euler angle offset from neutral position -- lying flat on a table, with the top towards north
+
+                                                        // heading (compass) 0 is north, clockwise   
+            if (e.webkitCompassHeading) {
+                var alpha = e.webkitCompassHeading;     // on iphone, alpha returns the offset from the first request
+            } else {
+                var alpha = e.alpha;          
+            }            
+            var beta = e.beta;                          // elevation (degrees tilted up) 0 is horizontal
+            // var beta = ((e.beta + 180) + 180) % 360; // (make 360 instead of -180, 180)
+            var gamma = e.gamma;                        // bank (degrees tilted right) 0 is horizontal
+                                                        // cant fix bank, doesnt know when it's upside down
 
 
             var d = [alpha, beta, gamma];    
-            $('#display_alpha').html("compass:<br />" + d[0]);
-            $('#display_beta').html("front-tilt:<br />" + d[1]);
-            $('#display_gamma').html("side-tilt:<br />" + d[2]);
+            $('#display_alpha').html("heading: " + Math.floor(d[0]));
+            $('#display_beta').html("elevation: " + Math.floor(d[1]));
+            $('#display_gamma').html("bank: " + Math.floor(d[2]));
 
             $('#arrow_alpha').css({
                 "-webkit-transform": "rotate(" + alpha + "deg)",
@@ -57,17 +73,17 @@ https://www.html5rocks.com/en/tutorials/device/orientation/
         <span id="display_y">y</span><br />
         <span id="display_z">z</span><br />
         <br />
-        <span id="display_alpha">compass</span><br />
+        <span id="display_alpha">heading</span><br />
         <div style="text-align: center">
             <img id="arrow_alpha" style="width: 25px; height: 25px; margin: auto; background-color: black;" src="/static/img/compass.png" />
         </div>
         <br />    
-        <span id="display_beta">front-tilt</span><br />
+        <span id="display_beta">elevation</span><br />
         <div style="text-align: center">
             <img id="arrow_beta" style="width: 25px; height: 25px; margin: auto; background-color: black;" src="/static/img/compass.png" />
         </div>
         <br />    
-        <span id="display_gamma">side-tilt</span><br />        
+        <span id="display_gamma">bank</span><br />        
         <div style="text-align: center">
             <img id="arrow_gamma" style="width: 25px; height: 25px; margin: auto; background-color: black;" src="/static/img/compass.png" />
         </div>
