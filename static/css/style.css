@@ -84,3 +84,13 @@ body, html {
     font-family: monospace;
     font-size: 12px;
 }
+
+#orientation {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    color: black;
+    font-family: monospace;
+    font-size: 12px;
+}
