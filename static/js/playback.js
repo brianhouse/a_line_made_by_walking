@@ -101,7 +101,8 @@ function startRecording () {
     getGeoLocation();    
     geo_interval = setInterval(getGeoLocation, 10000);
     window.ondevicemotion = function(e) {
-        var d = [timestamp() - start_time, e.acceleration.x, e.acceleration.y, e.acceleration.z];                
+        var a = [e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.z];
+        var d = [timestamp() - start_time, a[0], a[1], a[2]];                
         $('#display_x').html("x: " + d[1]);
         $('#display_y').html("y: " + d[2]);
         $('#display_z').html("z: " + d[3]);
