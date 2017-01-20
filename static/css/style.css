@@ -5,14 +5,11 @@ body, html {
     height: 100%;            
     font: 16px 'Roboto Condensed', sans-serif;
     color: black;            
-    background-color: black;
+    background-color: white;
 }
 
 #main {
-    width: 320px;
-    height: 460px;
-    margin: auto;
-    background-color: white;    
+
 }
 
 #map {

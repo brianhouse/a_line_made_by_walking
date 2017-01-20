@@ -6,7 +6,7 @@ import json, time, random, model
 import signal_processing as sp
 from housepy import log, config, drawing
 
-MIN_STEPS = 50
+MIN_STEPS = 10
 
 walks = model.fetch_walks(desc=False)
 # walks = [walk for walk in walks if walk['id'] >= config['walk_id']]

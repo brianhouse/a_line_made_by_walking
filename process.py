@@ -43,7 +43,7 @@ def process_walk(walk_id, force=False):
     total_samples -= (skipin + skipout)
     log.info("TOTAL SAMPLES %s (%fs)" % (total_samples, (total_samples / 1000.0)))
 
-    # get 3d magnitude (not RMS)
+    # get 3d magnitude (not RMS) -- orientation shouldnt matter
     ds = np.sqrt(np.power(xs, 2) + np.power(ys, 2) + np.power(zs, 2))    
 
     # prep the raw values for display
@@ -58,7 +58,7 @@ def process_walk(walk_id, force=False):
     ys = sp.smooth(ys, 300)
     zs = sp.smooth(zs, 300)
 
-    # process the main signal
+    # process the magnitude signal
     ds = sp.smooth(ds, 500)
     ds = np.clip(ds, -10.0, 10.0)   # limit the signal to +-10 Gs
     ds = sp.normalize(ds)
