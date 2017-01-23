@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, json, model, random
+import os, json, model, random, visualizer
 from housepy import config, log, strings, server
 from housepy import process as pc
 from process import process_walk
@@ -53,9 +53,18 @@ class Sequence(server.Handler):
         return self.json(data)
 
 
+class Visualizer(server.Handler):
+
+    def get(self, page=None):
+        log.info("Visualizer.get %s" % page)
+        data = visualizer.get_data()
+        return self.render("vis.html", v=random.randint(0, 1000000), data=data)
+
+
 def main():
     handlers = [
-        (r"/sequence/?([^/]*)", Sequence),    
+        (r"/sequence/?([^/]*)", Sequence),   
+         (r"/visualize/?([^/]*)", Visualizer),     
         (r"/?([^/]*)/?([^/]*)", Home),
     ]
     server.start(handlers)      
