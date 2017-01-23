@@ -5,4 +5,5 @@ server:
     port: 2222
     log_templates: False
 
-walk_id: 1
+min_steps: 1
+max_steps: 50
