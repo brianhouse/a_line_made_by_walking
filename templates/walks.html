@@ -1,0 +1,26 @@
+{% extends "page.html" %}
+
+{% block head %}
+    <script type="text/javascript">
+        function updateHidden(walk_id) {
+            console.log(walk_id);
+            console.log();
+            $.ajax({
+                type: "POST",
+                url: "/sequence",
+                data: {walk_id: walk_id, show: document.getElementById("check_" + walk_id).checked},
+                success: function() { location.reload() }
+            });
+        }        
+    </script>
+{% endblock head %}
+
+{% block body %}
+
+<div style="margin: 50px">
+{% for walk in walks %}
+    Walk #{{ walk.id }}, {{ (walk.duration // 1000) | format_time }}, based on #{{ walk.ref_id }} <input id="check_{{ walk.id }}" type="checkbox" {{ "checked=\"checked\"" if not walk.hidden else "" }} onClick="updateHidden({{ walk.id }});" /><br />
+{% endfor %}
+</div>
+
+{% endblock body %}

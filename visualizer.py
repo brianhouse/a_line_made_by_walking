@@ -5,25 +5,25 @@ import json, time, random, model
 import signal_processing as sp
 from housepy import log, config
 
-MIN_STEPS = 10
 
+def get_data(hidden=False):
 
-def get_data():
+    log.debug("HIDDEN %s" % hidden)
 
     data = {}
 
     try:
 
-        walks = model.fetch_walks(desc=False)
+        walks = model.fetch_walks(hidden=hidden)
 
         notes = []
         v = 0
         ids = []
         for walk in walks:
             sequence = model.fetch_sequence(walk['id'])
-            if len(sequence) < MIN_STEPS:
+            if len(sequence) < config['min_steps']:
                 continue
-            for step in sequence:
+            for step in sequence[:config['max_steps']]:
                 notes.append((step[0], v, 0 if step[1] == 'left' else 1))
             v += 1
             ids.append(walk['id'])

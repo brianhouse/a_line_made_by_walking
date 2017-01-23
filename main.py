@@ -20,6 +20,8 @@ class Home(server.Handler):
             if not type(walk_id) == int and not len(walk_id):
                 walk_id = None
             return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id)), ref_id=walk_id) 
+        if page == "walks":
+            return self.render("walks.html", walks=model.fetch_walks(hidden=True))
         if page == "choose":
             return self.render("choose.html", walks=model.fetch_walks()) 
         if page in ["prepare", "route", "map", "thanks", "orientation", "background"]:
@@ -52,19 +54,28 @@ class Sequence(server.Handler):
         data = model.fetch_squence(walk_id)
         return self.json(data)
 
+    def post(self, nop=None):
+        walk_id = self.get_argument('walk_id')
+        show = self.get_argument('show')
+        log.info("Sequence.post %s %s" % (walk_id, show))
+        hidden = show == "false"
+        model.hide(walk_id, hidden)
+        return self.text("OK")
+
 
 class Visualizer(server.Handler):
 
     def get(self, page=None):
         log.info("Visualizer.get %s" % page)
-        data = visualizer.get_data()
+        hidden = True if page == "all" else False
+        data = visualizer.get_data(hidden)
         return self.render("vis.html", v=random.randint(0, 1000000), data=data)
 
 
 def main():
     handlers = [
         (r"/sequence/?([^/]*)", Sequence),   
-         (r"/visualize/?([^/]*)", Visualizer),     
+        (r"/visualize/?([^/]*)", Visualizer),     
         (r"/?([^/]*)/?([^/]*)", Home),
     ]
     server.start(handlers)      

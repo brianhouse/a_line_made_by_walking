@@ -15,7 +15,7 @@ function draw() {
     var ids = data['walk_ids'];
 
     textSize(10);
-    fill(50);
+    fill(0);
     noStroke();
     for (var i in ids) {
         var id = ids[i];
@@ -31,9 +31,9 @@ function draw() {
         var x = note[0] * (width - 2 * MARGIN) + MARGIN;
         var y = (note[1] / ids.length) * (height - 2 * MARGIN) + MARGIN;
         if (note[2] == 0) {
-            fill(255);
+            fill(255);  // left
         } else {
-            fill(0);
+            fill(0);    // right
             y += 5;
         }
         var size = 5.0;

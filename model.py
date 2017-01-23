@@ -4,11 +4,11 @@ import sqlite3, json, os
 from housepy import config, log
 
 def db_call(f):
-    def wrapper(*args, desc=False):
+    def wrapper(*args, **kwargs):
         connection = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), "data.db")))
         connection.row_factory = sqlite3.Row
         db = connection.cursor()
-        results = f(db, *args)
+        results = f(db, *args, **kwargs)
         connection.commit()
         connection.close()
         return results
@@ -17,7 +17,7 @@ def db_call(f):
 @db_call
 def init(db):
     try:
-        db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER, ref_id INTEGER)")
+        db.execute("CREATE TABLE walks (id INTEGER PRIMARY KEY, start_time INTEGER, duration INTEGER, ref_id INTEGER, hidden BOOLEAN)")
         db.execute("CREATE TABLE geo_data (walk_id INTEGER, t INTEGER, lat REAL, lng REAL)")
         db.execute("CREATE INDEX geo_data_walk_id ON geo_data(walk_id)")
         db.execute("CREATE TABLE accel_data (walk_id INTEGER, t INTEGER, x REAL, y REAL, z REAL)")
@@ -34,7 +34,7 @@ init()
 @db_call
 def insert_walk(db, walk):
     try:
-        db.execute("INSERT INTO walks (start_time, duration, ref_id) VALUES (?, ?, ?)", (walk['start_time'], walk['duration'], walk['ref_id']))
+        db.execute("INSERT INTO walks (start_time, duration, ref_id) VALUES (?, ?, ?, ?)", (walk['start_time'], walk['duration'], walk['ref_id'], False))
         walk_id = db.lastrowid    
         for gd in walk['geo_data']:
             db.execute("INSERT INTO geo_data (walk_id, t, lat, lng) VALUES (?, ?, ?, ?)", (walk_id, gd[0], gd[1], gd[2]))
@@ -55,9 +55,12 @@ def insert_sequence(db, walk_id, sequence):
         return None
 
 @db_call
-def fetch_walks(db, desc=False):
+def fetch_walks(db, hidden=False, desc=False):
     try:
-        db.execute("SELECT * FROM walks WHERE duration > 10000 ORDER BY start_time %s" % ("DESC" if desc else ""))
+        log.debug(hidden)
+        query = "SELECT * FROM walks %s ORDER BY start_time %s" % ("WHERE hidden=0" if not hidden else "", "DESC" if desc else "")
+        log.debug(query)
+        db.execute(query)
         rows = [dict(gd) for gd in db.fetchall()]
     except Exception as e:
         log.error(log.exc(e))
@@ -103,3 +106,8 @@ def process_check(db, walk_id):
 @db_call
 def remove_sequence(db, walk_id):
     db.execute("DELETE FROM sequence WHERE walk_id=?", (walk_id,))
+
+@db_call
+def hide(db, walk_id, hidden):
+    log.debug(hidden)
+    db.execute("UPDATE walks SET hidden=? WHERE id=?", (hidden, walk_id,))
