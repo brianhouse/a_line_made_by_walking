@@ -34,7 +34,7 @@ init()
 @db_call
 def insert_walk(db, walk):
     try:
-        db.execute("INSERT INTO walks (start_time, duration, ref_id) VALUES (?, ?, ?, ?)", (walk['start_time'], walk['duration'], walk['ref_id'], False))
+        db.execute("INSERT INTO walks (start_time, duration, ref_id, hidden) VALUES (?, ?, ?, ?)", (walk['start_time'], walk['duration'], walk['ref_id'], False))
         walk_id = db.lastrowid    
         for gd in walk['geo_data']:
             db.execute("INSERT INTO geo_data (walk_id, t, lat, lng) VALUES (?, ?, ?, ?)", (walk_id, gd[0], gd[1], gd[2]))
