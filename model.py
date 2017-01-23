@@ -71,19 +71,23 @@ def fetch_geo(db, walk_id):
     return rows
 
 @db_call
-def fetch_sequence(db, walk_id=None):    
+def fetch_sequence(db, walk_id=None):    # fetch last walk by default, else return empty
     if walk_id is None:
         db.execute("SELECT id FROM walks ORDER BY start_time DESC LIMIT 1")
         walk = db.fetchone()
-        walk_id = walk['id'] if walk is not None else 1
-    db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))        
-    results = db.fetchall()
-    sequence = [(step['t'], step['foot']) for step in results]
-    if len(results):
-        log.info("--> fetching sequence from walk %s" % results[0]['walk_id'])
+        walk_id = walk['id'] if walk is not None else None
+    if walk_id is not None:
+        db.execute("SELECT * FROM sequence WHERE walk_id=?", (walk_id,))        
+        results = db.fetchall()
+        sequence = [(step['t'], step['foot']) for step in results]
+        if len(results):
+            log.info("--> fetching sequence from walk %s" % results[0]['walk_id'])
+        else:
+            log.info("--> no data retrieved for walk %s" % walk_id)
+        return sequence
     else:
-        log.info("--> no data retrieved for walk %s" % walk_id)
-    return sequence
+        log.info("--> no walks available")
+        return []
 
 @db_call
 def fetch_accels(db, walk_id):

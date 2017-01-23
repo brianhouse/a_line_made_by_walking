@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, json, model
+import os, json, model, random
 from housepy import config, log, strings, server
 from housepy import process as pc
 from process import process_walk
@@ -14,8 +14,12 @@ class Home(server.Handler):
         log.info("Home.get %s" % page)
         if not len(page):
             return self.render("home.html")        
-        if page == "walk":
-            return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id)), ref_id=walk_id if len(walk_id) else 0) 
+        if page == "walk":            
+            if len(walk_id) and walk_id == "c":
+                walk_id = random.choice(config['walk_ids'])
+            if not type(walk_id) == int and not len(walk_id):
+                walk_id = None
+            return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id)), ref_id=walk_id) 
         if page == "choose":
             return self.render("choose.html", walks=model.fetch_walks()) 
         if page in ["prepare", "route", "map", "thanks", "orientation", "background"]:
