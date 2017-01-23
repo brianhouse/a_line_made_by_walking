@@ -16,7 +16,11 @@ class Home(server.Handler):
             return self.render("home.html")        
         if page == "walk":            
             if len(walk_id) and walk_id == "c":
-                walk_id = random.choice(model.fetch_walks())['id']
+                walks = model.fetch_walks()
+                if len(walks):
+                    walk_id = random.choice(walks)['id']
+                else:
+                    walk_id = None
             if not type(walk_id) == int and not len(walk_id):
                 walk_id = None
             return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id)), ref_id=walk_id) 
