@@ -21,7 +21,7 @@ class Home(server.Handler):
                     walk_id = random.choice(walks)['id']
                 else:
                     walk_id = None
-            if not type(walk_id) == int and not len(walk_id):
+            elif not type(walk_id) == int and not len(walk_id):
                 walk_id = None
             return self.render("walk.html", sequence=json.dumps(model.fetch_sequence(walk_id)), ref_id=walk_id) 
         if page == "walks":
