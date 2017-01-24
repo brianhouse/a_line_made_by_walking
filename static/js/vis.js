@@ -29,7 +29,6 @@ function draw() {
         var note = notes[n];
 
         var x = note[0] * (width - 2 * MARGIN) + MARGIN;
-        // x += 10 * note[1];
         var y = (note[1] / ids.length) * (height - 2 * MARGIN) + MARGIN;
         if (note[2] == 0) {
             fill(255);  // left

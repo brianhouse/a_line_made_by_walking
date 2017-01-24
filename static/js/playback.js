@@ -39,16 +39,15 @@ function startWalk () {
 function startRecording () {
     console.log("startRecording");
     start_time = timestamp();
-    playSound('go', context.currentTime, 1.0, 0.0);    
+    audio_start_time = context.currentTime;
+    playSound('go', audio_start_time, 1.0, 0.0);    
+    queueAudio();
+    sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps    
 }
 
 function startAudio () {
     console.log("startAudio");
-    audio_start_time = context.currentTime;
-    playSound('countdown', audio_start_time, 1.0, 0.0, startRecording);
-    audio_start_time += duration('countdown');  // now starting from after countoff    
-    queueAudio();
-    sequence_interval = setInterval(queueAudio, 9000); // overlap a little so we dont have gaps
+    playSound('countdown', context.currentTime, 1.0, 0.0, startRecording);
 }
 
 function queueAudio () {

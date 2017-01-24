@@ -27,7 +27,7 @@ def process_walk(walk_id, force=False):
 
     # need at least 10s of data
     # add 2000 for trimming at nd
-    if total_samples < 2000 + 10000: 
+    if total_samples < 10000 + 2000: 
         log.info("No footsteps detected (too short)")
         model.hide(walk_id)        
         return
@@ -37,7 +37,7 @@ def process_walk(walk_id, force=False):
     ys = sp.resample(ts, data[:,2], total_samples)
     zs = sp.resample(ts, data[:,3], total_samples)
 
-    # skip 0.5s for accelerometer startup, and 3s for phone out of pocket at end
+    # skip for accelerometer startup and for phone out of pocket at end 
     skipin, skipout = 0, 2000
     xs = xs[skipin:-skipout]
     ys = ys[skipin:-skipout]
@@ -70,8 +70,6 @@ def process_walk(walk_id, force=False):
 
     # detect peaks
     peaks, valleys = sp.detect_peaks(ds, lookahead=50, delta=0.10)
-    if len(peaks) and peaks[0][0] == 0:
-        peaks = peaks[1:]
     peaks = np.array(peaks)
     valleys = np.array(valleys)
     log.info("PEAKS %s" % len(peaks))
@@ -84,8 +82,7 @@ def process_walk(walk_id, force=False):
     fxs = [peak[0] for peak in peaks]
     fys = [peak[1] for peak in peaks]
     avs = np.average([peak[1] for peak in peaks])
-    fxs = [0] + fxs
-    fys = [avs] + fys
+    fys[0] = avs    # it's going to start with a peak, so we need to bring it up or down accordingly
     fxs.append(total_samples-1)
     fys.append(avs)
     fs = sp.resample(fxs, fys, total_samples)
@@ -97,7 +94,7 @@ def process_walk(walk_id, force=False):
     for p, peak in enumerate(peaks):
         foot = 'right' if peak[1] > fs[int(peak[0])] else 'left'
         t = peak[0]
-        t += 1/16   # turns out the peak hits just before the step
+        # t += .409   # turns out the peak hits just before the step
         sequence.append((t, foot))
 
     # fix triples
