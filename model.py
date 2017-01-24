@@ -108,6 +108,6 @@ def remove_sequence(db, walk_id):
     db.execute("DELETE FROM sequence WHERE walk_id=?", (walk_id,))
 
 @db_call
-def hide(db, walk_id, hidden):
-    log.debug(hidden)
+def hide(db, walk_id, hidden=True):
+    log.debug("Hiding walk %s: %s" % (walk_id, hidden))
     db.execute("UPDATE walks SET hidden=? WHERE id=?", (hidden, walk_id,))

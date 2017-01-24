@@ -25,9 +25,11 @@ def process_walk(walk_id, force=False):
     ts = data[:,0]
     total_samples = int(ts[-1])
 
-    # need at least 5s of data
-    if total_samples < 3500 + 5000: 
+    # need at least 10s of data
+    # add 2000 for trimming at nd
+    if total_samples < 2000 + 10000: 
         log.info("No footsteps detected (too short)")
+        model.hide(walk_id)        
         return
 
     # resample the values
@@ -36,7 +38,7 @@ def process_walk(walk_id, force=False):
     zs = sp.resample(ts, data[:,3], total_samples)
 
     # skip 0.5s for accelerometer startup, and 3s for phone out of pocket at end
-    skipin, skipout = 500, 3000
+    skipin, skipout = 0, 2000
     xs = xs[skipin:-skipout]
     ys = ys[skipin:-skipout]
     zs = zs[skipin:-skipout]
@@ -75,6 +77,7 @@ def process_walk(walk_id, force=False):
     log.info("PEAKS %s" % len(peaks))
     if not len(peaks):
         log.info("No footsteps detected")
+        model.hide(walk_id)
         return
 
     # get foot separator line
@@ -93,7 +96,15 @@ def process_walk(walk_id, force=False):
     sequence = []
     for p, peak in enumerate(peaks):
         foot = 'right' if peak[1] > fs[int(peak[0])] else 'left'
-        sequence.append((peak[0], foot))
+        t = peak[0]
+        t += 1/16   # turns out the peak hits just before the step
+        sequence.append((t, foot))
+
+    # fix triples
+    for i in range(len(sequence) - 2):
+        if sequence[i][1] == sequence[i+1][1] == sequence[i+2][1]:
+            sequence[i+1] = (sequence[i+1][0], 'right') if sequence[i+1][1] == 'left' else (sequence[i+1][0], 'left')
+
     model.insert_sequence(walk_id, sequence)
 
     plot(walk_id, xs, ys, zs, ds, peaks, total_samples, fs)

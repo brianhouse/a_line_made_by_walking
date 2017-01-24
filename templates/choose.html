@@ -22,9 +22,9 @@
         <br />
         <select id="walk">                
         {% for walk in walks %}
-            <option value="{{ walk.id }}">Walk #{{ walk.id }}, {{ (walk.duration // 1000) | format_time }}, based on {{ walk.ref_id }}</option>
+            <option value="{{ walk.id }}" {% if loop.last %}selected="selected"{% endif %}>Walk #{{ walk.id }}, {{ (walk.duration // 1000) | format_time }}, based on {{ walk.ref_id }}</option>
         {% endfor %}
-        <option value="NONE">NONE</option>
+        <option value="">NONE</option>
         </select>
         <br />
         <br />
