@@ -5,6 +5,7 @@ function setup() {
     var canvas = createCanvas(windowWidth, windowHeight);
     canvas.parent('p5');
     textFont("monospace");    
+    frameRate(2);
 }
 
 function draw() {

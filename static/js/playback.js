@@ -1,6 +1,7 @@
-var start_time = null;          // absolute t
-var stop_time = null;           // absolute t
-var audio_start_time = null;    // context time
+var absolute_time = null;
+var start_time = null;
+var stop_time = null;
+var audio_start_time = null;
 
 var sequence = null;
 var accel_data = [];
@@ -24,7 +25,11 @@ var sequence_interval = null;
 // } 
 
 function timestamp () {
-    return new Date().getTime();
+    if (absolute_time == null) {
+        absolute_time = new Date().getTime() - Math.floor(context.currentTime * 1000);
+    }
+    return Math.floor(context.currentTime * 1000) + absolute_time;  // have an absolute time, but keep the clock the same as the audio
+    // return new Date().getTime();
 }
 
 function startWalk () {

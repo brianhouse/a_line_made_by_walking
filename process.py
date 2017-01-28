@@ -79,7 +79,7 @@ def process_walk(walk_id, force=False):
         return
 
     # get foot separator line
-    fxs = [peak[0] for peak in peaks]
+    fxs = [int(peak[0]) for peak in peaks]
     fys = [peak[1] for peak in peaks]
     avs = np.average([peak[1] for peak in peaks])
     fys[0] = avs    # it's going to start with a peak, so we need to bring it up or down accordingly
@@ -94,7 +94,7 @@ def process_walk(walk_id, force=False):
     for p, peak in enumerate(peaks):
         foot = 'right' if peak[1] > fs[int(peak[0])] else 'left'
         t = peak[0]
-        # t += .409   # turns out the peak hits just before the step
+        t += 300   # turns out the peak hits just before the step
         sequence.append((t, foot))
 
     # fix triples
