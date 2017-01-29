@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, json, model, random, visualizer
+import os, json, model, random, visualizer, gzip
 from housepy import config, log, strings, server
 from housepy import process as pc
 from process import process_walk
@@ -35,7 +35,8 @@ class Home(server.Handler):
     def post(self, nop=None, nop2=None):
         log.info("Home.post")
         try:
-            data = json.loads(self.get_argument('walk_data'))
+            data = self.get_argument('walk_data')
+            data = json.loads(data)
             # log.debug(data)
         except Exception as e:
             return self.error(log.exc(e))
@@ -55,8 +56,8 @@ class Sequence(server.Handler):
 
     def get(self, walk_id=None):
         log.info("Sequence.get %s" % walk_id)
-        data = model.fetch_squence(walk_id)
-        return self.json(data)
+        data = model.fetch_sequence(walk_id)
+        return self.json(data, gzip=True)
 
     def post(self, nop=None):
         walk_id = self.get_argument('walk_id')

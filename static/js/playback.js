@@ -105,7 +105,7 @@ function sendWalk () {
         duration == null;
     }
     var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration, 'ref_id': ref_id};
-    walk_data = JSON.stringify(walk_data);            
+    walk_data = JSON.stringify(walk_data);     
     $.ajax({
         type: 'POST',
         url: '/', 
