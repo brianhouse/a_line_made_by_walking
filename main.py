@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import os, json, model, random, visualizer, gzip
-from housepy import config, log, strings, server
+import os, json, model, random, visualizer, base64, zlib
+from housepy import config, log, strings, server, util
 from housepy import process as pc
 from process import process_walk
 
@@ -35,7 +35,10 @@ class Home(server.Handler):
     def post(self, nop=None, nop2=None):
         log.info("Home.post")
         try:
-            data = self.get_argument('walk_data')
+            data = self.get_argument('walk_data')            
+            data = base64.b64decode(data)
+            data = zlib.decompress(data, -15)
+            data = data.decode()
             data = json.loads(data)
             # log.debug(data)
         except Exception as e:

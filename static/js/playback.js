@@ -105,7 +105,10 @@ function sendWalk () {
         duration == null;
     }
     var walk_data = {'accel_data': accel_data, 'geo_data': geo_data, 'start_time': start_time, 'duration': duration, 'ref_id': ref_id};
-    walk_data = JSON.stringify(walk_data);     
+    walk_data = JSON.stringify(walk_data);   
+    // alert(walk_data.length);
+    walk_data = btoa(RawDeflate.deflate(walk_data));
+    // alert(walk_data.length);           
     $.ajax({
         type: 'POST',
         url: '/', 
@@ -117,8 +120,10 @@ function sendWalk () {
             alert(result.responseText.substr(5));
             window.location = "/";
         }
-    });
+    });        
+
 }
+
 
 $(document).ready(function () {
     // getGeoLocation();     
