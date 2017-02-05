@@ -34,7 +34,8 @@ function timestamp () {
 
 function startWalk () {
     console.log("startWalk");
-    setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min    
+    setTimeout(stopWalk, 2 * 60 * 1000); // safety timeout at 2min    
+    // setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min        
     // getGeoLocation();    
     // geo_interval = setInterval(getGeoLocation, 10000);    
     startAudio();
