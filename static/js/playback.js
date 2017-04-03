@@ -11,18 +11,18 @@ var ref_id = null;
 var geo_interval = null;
 var sequence_interval = null;
 
-// function getGeoLocation () {
-//     console.log("getGeoLocation");
-//     // doing this explicitly instead of with leaflet because it appears to be more accurate
-//     navigator.geolocation.getCurrentPosition(receiveGeoLocation)
-// }
+function getGeoLocation () {
+    console.log("getGeoLocation");
+    // doing this explicitly instead of with leaflet because it appears to be more accurate
+    navigator.geolocation.getCurrentPosition(receiveGeoLocation);
+}
 
-// function receiveGeoLocation (location) {
-//     console.log("receiveGeoLocation");
-//     if (start_time != null) {
-//         geo_data.push([timestamp() - start_time, location.coords.latitude, location.coords.longitude]);
-//     }
-// } 
+function receiveGeoLocation (location) {
+    console.log("receiveGeoLocation");
+    if (start_time != null) {
+        geo_data.push([timestamp() - start_time, location.coords.latitude, location.coords.longitude]);
+    }
+} 
 
 function timestamp () {
     if (absolute_time == null) {
@@ -34,10 +34,9 @@ function timestamp () {
 
 function startWalk () {
     console.log("startWalk");
-    setTimeout(stopWalk, 2 * 60 * 1000); // safety timeout at 2min    
-    // setTimeout(stopWalk, 10 * 60 * 1000); // safety timeout at 10min        
-    // getGeoLocation();    
-    // geo_interval = setInterval(getGeoLocation, 10000);    
+    setTimeout(stopWalk, 15 * 60 * 1000); // safety timeout at 15min        
+    getGeoLocation();    
+    geo_interval = setInterval(getGeoLocation, 10000);    
     startAudio();
     startAccelerometer();
 }
@@ -92,7 +91,7 @@ function stopWalk () {
     stop_time = timestamp();
     window.ondevicemotion = function(event) { };            
     master_gain_node.gain.value = 0.0;
-    // getGeoLocation();
+    getGeoLocation();
     sendWalk();
     start_time = null;
     stop_time = null;
@@ -127,7 +126,7 @@ function sendWalk () {
 
 
 $(document).ready(function () {
-    // getGeoLocation();     
+    getGeoLocation();     
     initAudio();
     loadSound('left', "/static/snd/left.wav");
     loadSound('right', "/static/snd/right.wav");                
@@ -144,6 +143,5 @@ $(document).ready(function () {
         });
         startWalk();        
     });
-    // $('#compass_holder').hide();
 });
 
