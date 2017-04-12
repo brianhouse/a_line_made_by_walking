@@ -23,7 +23,7 @@ def get_data(hidden=False):
             sequence = model.fetch_sequence(walk['id'])
             if len(sequence) < config['min_steps']:
                 continue
-            for step in sequence[:config['max_steps']]:
+            for step in sequence:#[:config['max_steps']]:
                 notes.append((step[0], v, 0 if step[1] == 'left' else 1))
             v += 1
             ids.append(walk['id'])
@@ -34,7 +34,7 @@ def get_data(hidden=False):
         onsets = sp.normalize(onsets)
         notes = [(onsets[i], note[1], note[2]) for (i, note) in enumerate(notes)]
 
-        # print(notes)
+        log.info("NOTES %s" % len(notes))
 
         data['notes'] = notes
         data['walk_ids'] = ids

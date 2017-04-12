@@ -2,7 +2,7 @@ var MARGIN = 50;
 
 function setup() {
     console.log("Hello world");
-    var canvas = createCanvas(windowWidth, windowHeight);
+    var canvas = createCanvas(15000, windowHeight);
     canvas.parent('p5');
     textFont("monospace");    
     frameRate(2);
