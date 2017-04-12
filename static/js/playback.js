@@ -34,7 +34,6 @@ function timestamp () {
 
 function startWalk () {
     console.log("startWalk");
-    setTimeout(stopWalk, 5 * 60 * 1000); // timeout at 5 mins
     getGeoLocation();    
     geo_interval = setInterval(getGeoLocation, 10000);    
     startAudio();
@@ -43,6 +42,7 @@ function startWalk () {
 
 function startRecording () {
     console.log("startRecording");
+    setTimeout(stopWalk, 5 * 60 * 1000); // timeout at 5 mins    
     start_time = timestamp();
     audio_start_time = context.currentTime;
     playSound('go', audio_start_time, 1.0, 0.0);    
