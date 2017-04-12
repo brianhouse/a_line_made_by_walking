@@ -34,7 +34,7 @@ function timestamp () {
 
 function startWalk () {
     console.log("startWalk");
-    setTimeout(stopWalk, 15 * 60 * 1000); // safety timeout at 15min        
+    setTimeout(stopWalk, 5 * 60 * 1000); // timeout at 5 mins
     getGeoLocation();    
     geo_interval = setInterval(getGeoLocation, 10000);    
     startAudio();
@@ -86,6 +86,7 @@ function startAccelerometer () {
 
 function stopWalk () {
     console.log("stopWalk");
+    playSound('go', context.currentTime, 1.0, 0.0);        
     $('#start_btn').hide();
     $('#readings').hide();    
     stop_time = timestamp();
