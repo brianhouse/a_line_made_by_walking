@@ -94,7 +94,7 @@ def process_walk(walk_id, force=False):
     for p, peak in enumerate(peaks):
         foot = 'right' if peak[1] > fs[int(peak[0])] else 'left'
         t = peak[0]
-        t += 300   # turns out the peak hits just before the step
+        t += 250   # turns out the peak hits just before the step
         sequence.append((t, foot))
 
     # fix triples
